@@ -11,6 +11,15 @@ router = APIRouter(tags=["files"])
 
 IMAGE_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif"}
 MAX_BYTES = 8 * 1024 * 1024
+SIGNATURES = {
+    "jpg": (b"\xff\xd8\xff",), "png": (b"\x89PNG\r\n\x1a\n",), "gif": (b"GIF87a", b"GIF89a"),
+}
+
+
+def _matches_signature(ext: str, data: bytes) -> bool:
+    if ext == "webp":
+        return data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    return data.startswith(SIGNATURES[ext])
 
 
 @router.post("/admin/uploads", status_code=201)
@@ -18,9 +27,11 @@ async def upload_image(file: UploadFile = File(...), admin: dict = Depends(requi
     ext = IMAGE_TYPES.get(file.content_type or "")
     if not ext:
         raise HTTPException(status_code=400, detail="Formato non supportato: usa JPG, PNG, WEBP o GIF")
-    data = await file.read()
+    data = await file.read(MAX_BYTES + 1)
     if len(data) > MAX_BYTES:
         raise HTTPException(status_code=400, detail="Immagine troppo grande (massimo 8 MB)")
+    if not _matches_signature(ext, data):
+        raise HTTPException(status_code=400, detail="Il file non è un'immagine valida")
     result = await put_object(f"{APP_NAME}/images/{uuid.uuid4()}.{ext}", data, file.content_type)
     await get_db().files.insert_one({
         "id": new_id(), "storage_path": result["path"], "original_filename": file.filename,

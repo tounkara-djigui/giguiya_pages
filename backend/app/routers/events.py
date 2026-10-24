@@ -9,6 +9,7 @@ from app.services.email_service import try_send_email
 from app.services.event_service import booking_counts, event_out, events_out
 
 router = APIRouter(prefix="/events", tags=["events"])
+DUPLICATE_MSG = "Sei già iscritto a questo evento con questa email"
 
 
 async def _published_event(slug: str) -> dict:
@@ -44,16 +45,19 @@ async def book_event(slug: str, data: BookingIn):
     event = await _published_event(slug)
     if event["start_at"] < utcnow():
         raise HTTPException(status_code=400, detail="Le prenotazioni per questo evento sono chiuse")
+    email = data.email.lower()
+    if await get_db().bookings.find_one({"event_id": event["id"], "email": email}, {"_id": 1}):
+        raise HTTPException(status_code=409, detail=DUPLICATE_MSG)
     if event.get("capacity"):
         if (await booking_counts([event["id"]])).get(event["id"], 0) >= event["capacity"]:
             raise HTTPException(status_code=400, detail="Evento al completo")
     booking = {"id": new_id(), "event_id": event["id"], "first_name": data.first_name.strip(),
-               "last_name": data.last_name.strip(), "email": data.email.lower(), "phone": data.phone or None,
+               "last_name": data.last_name.strip(), "email": email, "phone": data.phone or None,
                "created_at": utcnow()}
     try:
         await get_db().bookings.insert_one(dict(booking))
     except DuplicateKeyError:
-        raise HTTPException(status_code=409, detail="Sei già iscritto a questo evento con questa email")
+        raise HTTPException(status_code=409, detail=DUPLICATE_MSG)
     subject, html = tpl.booking_confirmation(booking["first_name"], event)
     sent = await try_send_email(to=booking["email"], subject=subject, html=html)
     return BookingCreatedOut(id=booking["id"], message="Prenotazione confermata!", email_sent=sent)

@@ -1,0 +1,40 @@
+{
+  "summary": "Full regression after the Postgres to MongoDB migration plus the new Emergent object storage uploads. Backend: wrote new pymongo-based pytest suite (25 tests) covering public events/projects (seeded 3+3 present, scopes), bookings (201/409/400 capacity/422), member registration (GIG-<year>-NNNN increments, 409, 422), auth (httpOnly cookies, me/refresh/logout, bcrypt $2b$, 5 fails -> 429, 'Password non ancora impostata', admin register domain check + verify-email flow, set/change/forgot password), member dashboard + 403 on admin, admin stats/members/fees/resend/delete/contacts/events CRUD (Europe/Rome tz, end<start 400)/bookings/projects CRUD, uploads (401 anon, 403 member, 400 wrong type, 400 >8MB, 201 url, GET returns identical bytes with image/png, unknown 404). 25/25 pass. CORS returns explicit origin + credentials. Frontend: admin login -> /admin, Nuovo evento modal upload fills image field + preview loads, saved event shows uploaded image on /eventi card and detail; same for project modal, /progetti list and /progetti/<slug>; unsupported file shows toast 'Formato non supportato'. Smoke: home (no broken images), booking-success, membership-success, all 5 admin pages load. All test data cleaned (files marked is_deleted=true).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/auth/login", "issue": "Lockout identifier uses the first X-Forwarded-For value, which the client controls (a spoofed XFF value was honoured in the tests). An attacker can rotate the header to get around the 5-attempt lockout. Use the ingress-appended (last) hop, or also lock per email."},
+      {"endpoint": "POST /api/events/{slug}/bookings", "issue": "The capacity check runs before the duplicate check, so someone already booked on a full event gets 400 'Evento al completo' instead of 409. The count-then-insert capacity check is not atomic, so concurrent requests can overbook."},
+      {"endpoint": "POST /api/admin/uploads", "issue": "Only the client-supplied content_type is validated; there is no magic-byte check. The whole body is read into memory before the 8MB check."},
+      {"endpoint": "GET /api/admin/stats", "issue": "upcoming_events also counts unpublished events (no is_published filter)."},
+      {"endpoint": "email service", "issue": "The email provider returned 'rate_limited' after many test sends, so email_sent=false. This is handled gracefully and is not a code bug."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin event modal", "issues": ["Inizio/Fine use the browser's native datetime-local picker (mm/dd/yyyy US format shown), which does not match the themed UI"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/conftest.py", "/app/backend/tests/test_giguiya_mongo.py", "/app/test_reports/pytest/pytest_mongo.xml"],
+  "action_items": [
+    "Optional hardening: do not trust a client-supplied first X-Forwarded-For for the login lockout key",
+    "Optional: check for duplicate bookings before capacity, and make the capacity check atomic",
+    "Optional: check image magic bytes on upload",
+    "Optional: filter stats upcoming_events by is_published"
+  ],
+  "critical_code_review_comments": [
+    "routers/auth.py _client_ip trusts the left-most XFF value, which lets clients bypass the brute-force lockout",
+    "routers/events.py book_event has a capacity race condition, and a duplicate booking on a full event gets the wrong error code",
+    "routers/files.py has no signature sniffing and does a full read before the size check",
+    "Deleting an event or project does not mark its uploaded file is_deleted (orphan files; minor)"
+  ],
+  "updated_files": ["/app/backend/tests/conftest.py", "/app/backend/tests/test_giguiya_mongo.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin@giguiya.it / Giguiya@Admin2026 (read from backend/.env in tests)",
+  "seed_data_creation": "None persistent. All test_ users/bookings/tokens, TEST_ events/projects and login_attempts were deleted; 2 uploaded test file records set is_deleted=true.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend/tests && python -m pytest -n 0 -v test_giguiya_mongo.py (pytest.ini adds xdist flags, so -n 0 is required). conftest.py reads .env files, provides admin_client, make_email, insert_token (pymongo) and a session cleanup fixture. Lockout test uses a random X-Forwarded-For. Console 401s in the UI come from the anonymous /auth/me bootstrap (expected). Frontend upload test: set_input_files on [data-testid=admin-event-image-upload-input] / admin-project-image-upload-input, then wait for [data-testid=image-upload-preview]."
+}

@@ -21,7 +21,7 @@ LOCK_MINUTES = 15
 
 def _client_ip(request: Request) -> str:
     fwd = request.headers.get("x-forwarded-for")
-    return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else "unknown")
+    return fwd.split(",")[-1].strip() if fwd else (request.client.host if request.client else "unknown")
 
 
 async def _register_failure(attempt: dict | None, identifier: str) -> None:

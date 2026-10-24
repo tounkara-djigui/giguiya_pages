@@ -33,6 +33,12 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - 3 sample events (date/luogo da definire) – editable from admin Eventi
 - Foto reali degli eventi dell'associazione (da fornire dal cliente)
 
+## Update 2026-10-24 (MongoDB + file storage)
+- Production has no PostgreSQL: user chose the built-in database. Backend migrated to MongoDB (motor, MONGO_URL/DB_NAME), same API. Postgres supervisor program/script removed.
+- Emergent object storage: admin image upload (POST /api/admin/uploads, magic-byte + 8MB checks), public serving GET /api/files/{path}; upload button with preview in admin event/project forms; MediaUrlPipe resolves /api/files URLs.
+- Hardening from iteration_3: lockout uses last X-Forwarded-For hop, duplicate booking checked before capacity, stats counts only published upcoming events.
+- Testing iteration_3: backend 25/25, frontend 100%.
+
 ## Update 2026-10-24 (statuto + immagini Mali)
 - Statuto PDF pubblicato in /docs/statuto-aspcmt-giguiya.pdf (frontend/public/docs); C.F. 97886490016; APS; approvato 23/07/2023.
 - Contenuti riscritti dallo statuto: Chi siamo (finalità Art.2, attività Art.3, organi, ammissione soci), Home, Diventa socio (Consiglio direttivo, quota entro 31/12), 5x1000, email di benvenuto. Testi centralizzati in src/app/core/content/association.content.ts.

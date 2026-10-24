@@ -19,7 +19,7 @@ async def stats():
         members_pending_enrollment=sum(not m.enrollment_paid for m in members),
         bookings_total=await db.bookings.count_documents({}),
         contacts_total=len(await db.bookings.distinct("email")),
-        upcoming_events=await db.events.count_documents({"start_at": {"$gte": utcnow()}}),
+        upcoming_events=await db.events.count_documents({"start_at": {"$gte": utcnow()}, "is_published": True}),
         projects_total=await db.projects.count_documents({}),
         current_year=current_year(),
     )
