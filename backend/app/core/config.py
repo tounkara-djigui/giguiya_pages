@@ -19,6 +19,8 @@ class Settings:
     EMAIL_REPLY_TO = os.environ.get("EMAIL_REPLY_TO")
     ENROLLMENT_FEE = 5
     ANNUAL_FEE = 60
+    ENROLLMENT_FEE_LABEL = "xx"
+    ANNUAL_FEE_LABEL = "xx"
     TIMEZONE = "Europe/Rome"
     ACCESS_TOKEN_MINUTES = 60
     REFRESH_TOKEN_DAYS = 7

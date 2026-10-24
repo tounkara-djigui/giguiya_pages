@@ -34,12 +34,12 @@ import { ItDatePipe } from '../../../shared/pipes/it-date.pipe';
           <dt>Codice fiscale</dt><dd class="mono">{{ m.fiscal_code || '—' }}</dd>
           <dt>Indirizzo</dt><dd>{{ m.address || '—' }} {{ m.city ? '· ' + m.city : '' }}</dd>
           <dt>Domanda</dt><dd>{{ m.created_at | itDate: 'datetime' }}</dd>
-          <dt>Iscrizione 5€</dt><dd>{{ m.enrollment_paid ? 'Pagata il ' + (m.enrollment_paid_at | itDate: 'date') : 'Da pagare' }}</dd>
+          <dt>Iscrizione {{ m.enrollment_fee }} €</dt><dd>{{ m.enrollment_paid ? 'Pagata il ' + (m.enrollment_paid_at | itDate: 'date') : 'Da pagare' }}</dd>
           <dt>Tessera</dt><dd>{{ m.card_issued ? 'Rilasciata il ' + (m.card_issued_at | itDate: 'date') : 'Da rilasciare' }}</dd>
         </dl>
 
         <hr class="divider mt-3" />
-        <span class="label mt-3" style="display: block">Quote annuali ({{ m.annual_fee }}€)</span>
+        <span class="label mt-3" style="display: block">Quote annuali ({{ m.annual_fee }} €)</span>
         <div class="years mt-2">
           @for (y of years; track y) {
             <button class="chip" [class.active]="paid(y)" (click)="toggleYear(y)" [attr.data-testid]="'admin-member-year-' + y">

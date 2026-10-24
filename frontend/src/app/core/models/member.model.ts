@@ -41,8 +41,8 @@ export interface Member {
   current_year: number;
   current_year_paid: boolean;
   in_good_standing: boolean;
-  enrollment_fee: number;
-  annual_fee: number;
+  enrollment_fee: string;
+  annual_fee: string;
 }
 
 export interface MemberBooking {

@@ -7,12 +7,12 @@
       <div class="fees">
         <div class="card fee">
           <span class="label">Iscrizione</span>
-          <p class="stat-number mt-2" data-testid="membership-enrollment-fee">{{ site.enrollmentFee }}€</p>
+          <p class="stat-number mt-2" data-testid="membership-enrollment-fee">{{ site.enrollmentFee }} €</p>
           <p class="dim mt-1">una tantum</p>
         </div>
         <div class="card fee">
           <span class="label">Quota annuale</span>
-          <p class="stat-number mt-2" data-testid="membership-annual-fee">{{ site.annualFee }}€</p>
+          <p class="stat-number mt-2" data-testid="membership-annual-fee">{{ site.annualFee }} €</p>
           <p class="dim mt-1">ogni anno, entro il 31 dicembre</p>
         </div>
       </div>
@@ -91,7 +91,7 @@
             <button class="btn btn-gold btn-block" type="submit" [disabled]="loading()" data-testid="socio-registration-submit-button">
               @if (loading()) { <span class="spinner"></span> } @else { <lucide-icon [img]="i.UserPlus" [size]="16" /> } Invia domanda di iscrizione
             </button>
-            <p class="dim" style="font-size: .8rem">Il pagamento di iscrizione ({{ site.enrollmentFee }}€) e quota annuale ({{ site.annualFee }}€) avviene direttamente presso l'associazione.</p>
+            <p class="dim" style="font-size: .8rem">Il pagamento di iscrizione ({{ site.enrollmentFee }} €) e quota annuale ({{ site.annualFee }} €) avviene direttamente presso l'associazione.</p>
           </form>
         }
       </div>

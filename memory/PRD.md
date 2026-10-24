@@ -51,7 +51,12 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Static asset paths made relative (`images/...`, `docs/...`) and mediaUrl pipe strips leading `/` for non-API paths so the site works under a sub-path.
 - Verified: local prod build with --base-href /giguiya_pages/ OK; preview pages render with no broken images.
 
+## Update 2026-10-24 (prezzi xx € + rimozione "Staff @giguiya.it")
+- Prezzi mostrati come "xx €" ovunque (frontend SITE.enrollmentFee/annualFee = 'xx'; backend ENROLLMENT_FEE_LABEL/ANNUAL_FEE_LABEL = "xx" usati in API soci ed email di benvenuto). Importi numerici ENROLLMENT_FEE/ANNUAL_FEE restano per i record pagamenti.
+- Footer: link "Staff @giguiya.it" → "Area staff"; pagina login: testo "Crea l'account dell'area di gestione". La pagina registrazione-admin mantiene l'indicazione del dominio (serve per la validazione).
+
 ## Backlog
+- P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.
 - P1: Galleria foto eventi/progetti; pagina squadra con calendario partite.
 - P2: Pagamento online quote (Stripe), promemoria rinnovo quota annuale via email, migrazioni Alembic.

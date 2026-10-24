@@ -36,7 +36,7 @@ import { LogoComponent } from '../logo/logo.component';
             <span class="label">Accesso</span>
             <a routerLink="/accesso" class="f-link" data-testid="footer-login-link">Login</a>
             <a routerLink="/diventa-socio" class="f-link" data-testid="footer-registrazione-link">Registrazione socio</a>
-            <a routerLink="/accesso/registrazione-admin" class="f-link" data-testid="footer-admin-register-link">Staff &#64;{{ site.adminDomain }}</a>
+            <a routerLink="/accesso/registrazione-admin" class="f-link" data-testid="footer-admin-register-link">Area staff</a>
           </div>
           <div class="stack">
             <span class="label">Contatti</span>

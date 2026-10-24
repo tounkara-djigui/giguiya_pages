@@ -74,8 +74,8 @@ class MemberOut(BaseModel):
     current_year: int
     current_year_paid: bool
     in_good_standing: bool
-    enrollment_fee: int
-    annual_fee: int
+    enrollment_fee: str
+    annual_fee: str
 
 
 class MemberDashboardOut(BaseModel):

@@ -18,5 +18,5 @@ def member_out(user: dict) -> MemberOut:
         account_active=bool(user.get("password_hash")),
         fees=[FeeOut(**f) for f in fees], current_year=year, current_year_paid=current_paid,
         in_good_standing=m.get("enrollment_paid", False) and current_paid,
-        enrollment_fee=settings.ENROLLMENT_FEE, annual_fee=settings.ANNUAL_FEE,
+        enrollment_fee=settings.ENROLLMENT_FEE_LABEL, annual_fee=settings.ANNUAL_FEE_LABEL,
     )

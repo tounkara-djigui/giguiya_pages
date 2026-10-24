@@ -35,11 +35,11 @@
           }
           <div class="checks mt-3">
             <div class="check">
-              <span>Iscrizione <small class="dim">({{ m.enrollment_fee }}€)</small></span>
+              <span>Iscrizione <small class="dim">({{ m.enrollment_fee }} €)</small></span>
               <span class="badge" [class.badge-green]="m.enrollment_paid" [class.badge-red]="!m.enrollment_paid" data-testid="member-enrollment-status">{{ m.enrollment_paid ? 'Pagata' : 'Da pagare' }}</span>
             </div>
             <div class="check">
-              <span>Quota {{ m.current_year }} <small class="dim">({{ m.annual_fee }}€)</small></span>
+              <span>Quota {{ m.current_year }} <small class="dim">({{ m.annual_fee }} €)</small></span>
               <span class="badge" [class.badge-green]="m.current_year_paid" [class.badge-red]="!m.current_year_paid" data-testid="member-fee-status">{{ m.current_year_paid ? 'Pagata' : 'Da pagare' }}</span>
             </div>
             <div class="check">
@@ -56,7 +56,7 @@
           @if (m.fees.length) {
             <ul class="list mt-3" data-testid="member-fees-list">
               @for (f of m.fees; track f.year) {
-                <li><span class="mono">{{ f.year }}</span><span>{{ f.amount }}€</span><span class="dim">pagata il {{ f.paid_at | itDate: 'date' }}</span></li>
+                <li><span class="mono">{{ f.year }}</span><span>{{ m.annual_fee }} €</span><span class="dim">pagata il {{ f.paid_at | itDate: 'date' }}</span></li>
               }
             </ul>
           } @else {

@@ -37,7 +37,7 @@ import { Icons } from '../../shared/icons';
         </a>
         <a routerLink="/accesso/registrazione-admin" class="alt-item" data-testid="login-admin-register-link">
           <lucide-icon [img]="i.Shield" [size]="20" />
-          <span><strong>Staff Giguiya</strong><small>Crea l'account con la tua email &#64;{{ site.adminDomain }}</small></span>
+          <span><strong>Staff Giguiya</strong><small>Crea l'account dell'area di gestione</small></span>
         </a>
       </div>
     </app-auth-shell>

@@ -55,8 +55,8 @@ def member_welcome(first_name: str, membership_number: str, token: str) -> tuple
         "Abbiamo ricevuto correttamente la tua domanda di iscrizione.</p>"
         f"<p>Il tuo numero di pratica è <strong style=\"color:#F3E5AB\">{escape(membership_number)}</strong>.</p>"
         '<table role="presentation" style="margin:18px 0;border-left:3px solid #D4A03C">'
-        f"<tr><td style=\"padding:4px 14px\">Quota di iscrizione: <strong>{settings.ENROLLMENT_FEE} €</strong> (una tantum)</td></tr>"
-        f"<tr><td style=\"padding:4px 14px\">Quota associativa annuale: <strong>{settings.ANNUAL_FEE} €</strong></td></tr>"
+        f"<tr><td style=\"padding:4px 14px\">Quota di iscrizione: <strong>{settings.ENROLLMENT_FEE_LABEL} €</strong> (una tantum)</td></tr>"
+        f"<tr><td style=\"padding:4px 14px\">Quota associativa annuale: <strong>{settings.ANNUAL_FEE_LABEL} €</strong></td></tr>"
         "</table>"
         "<p>La tua domanda sarà esaminata dal Consiglio direttivo, come previsto dallo statuto. "
         "Nei prossimi giorni potrai essere contattato dalla nostra segreteria per il rilascio "
