@@ -45,6 +45,12 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Immagini reali del Mali (Wikimedia Commons, crediti nel footer): Djenné, Paese Dogon, Timbuctù, Mopti/Niger, Bandiagara come sfondi hero/page header + sezione "Scopri il Mali".
 - PostgreSQL data moved to /app/.pgdata via /app/scripts/start-postgres.sh (supervisor program postgres) so it survives container restarts.
 
+## Update 2026-10-24 (GitHub Pages workflow)
+- Added /app/.github/workflows/deploy.yml: on push to `main` (or manual run) builds Angular from /frontend with base-href `/<repo-name>/`, copies index.html→404.html (SPA routes), .nojekyll, deploys via actions/deploy-pages.
+- API URL comes from GitHub repo variable `API_URL` (Settings → Secrets and variables → Actions → Variables). Without it the Pages site is static only (no login/eventi/iscrizioni). Full site stays on Emergent.
+- Static asset paths made relative (`images/...`, `docs/...`) and mediaUrl pipe strips leading `/` for non-API paths so the site works under a sub-path.
+- Verified: local prod build with --base-href /giguiya_pages/ OK; preview pages render with no broken images.
+
 ## Backlog
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.
 - P1: Galleria foto eventi/progetti; pagina squadra con calendario partite.

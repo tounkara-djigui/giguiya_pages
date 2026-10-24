@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-logo',
   template: `
     <span class="logo" data-testid="brand-logo">
-      <span class="emblem"><img src="/images/logo-emblem.png" alt="Logo ASPCMT Giguiya" width="46" height="46" /></span>
+      <span class="emblem"><img src="images/logo-emblem.png" alt="Logo ASPCMT Giguiya" width="46" height="46" /></span>
       <span class="word">Giguiya<small>ASPCMT · Torino</small></span>
     </span>
   `,

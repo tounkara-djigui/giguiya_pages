@@ -10,7 +10,7 @@ import { Icons } from '../../shared/icons';
   selector: 'app-five-per-mille-page',
   imports: [RouterLink, LucideAngularModule, PageHeaderComponent, RevealDirective],
   template: `
-    <app-page-header overline="Sostienici" title="Il tuo 5x1000 a" accent="Giguiya" image="/images/mali-timbuktu.jpg"
+    <app-page-header overline="Sostienici" title="Il tuo 5x1000 a" accent="Giguiya" image="images/mali-timbuktu.jpg"
       lead="Destinare il 5x1000 non ti costa nulla: è una quota delle imposte che lo Stato riserva agli enti del terzo settore. Con la tua firma sostieni integrazione, solidarietà e progetti di cooperazione tra Italia e Mali." />
 
     <section class="section-tight">

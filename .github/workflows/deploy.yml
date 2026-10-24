@@ -1,0 +1,61 @@
+name: Pubblica su GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installa dipendenze
+        run: yarn install --network-timeout 600000
+
+      - name: Compila il sito Angular
+        env:
+          REACT_APP_BACKEND_URL: ${{ vars.API_URL }}
+        run: |
+          node scripts/set-env.js
+          npx ng build --configuration production --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Prepara la cartella per GitHub Pages
+        run: |
+          OUT=$(find dist -name index.html -path '*browser*' -printf '%h\n' | head -n1)
+          cp "$OUT/index.html" "$OUT/404.html"
+          touch "$OUT/.nojekyll"
+          echo "PAGES_DIR=frontend/$OUT" >> "$GITHUB_ENV"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.PAGES_DIR }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

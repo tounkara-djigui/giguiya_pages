@@ -12,7 +12,7 @@ import { Icons } from '../../shared/icons';
   selector: 'app-events-list-page',
   imports: [LucideAngularModule, EventCardComponent, PageHeaderComponent],
   template: `
-    <app-page-header overline="Agenda Giguiya" title="Eventi e" accent="incontri" image="/images/mali-niger.jpg"
+    <app-page-header overline="Agenda Giguiya" title="Eventi e" accent="incontri" image="images/mali-niger.jpg"
       lead="Laboratori, incontri, sport, gite e momenti di comunità aperti a tutta la cittadinanza. Scegli un evento e prenota il tuo posto in pochi secondi." />
 
     <section class="section-tight">

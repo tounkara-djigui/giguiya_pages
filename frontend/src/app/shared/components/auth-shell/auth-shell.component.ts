@@ -9,7 +9,7 @@ import { LogoComponent } from '../logo/logo.component';
       <div class="halo"></div>
       <div class="container wrap">
         <div class="side hide-mobile">
-          <img src="/images/mali-timbuktu.jpg" alt="" />
+          <img src="images/mali-timbuktu.jpg" alt="" />
           <div class="side-copy">
             <app-logo />
             <p class="mt-3">"Una comunità forte è fatta di mani che si intrecciano."</p>

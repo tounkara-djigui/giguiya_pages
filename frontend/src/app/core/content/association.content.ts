@@ -1,6 +1,6 @@
 export const STATUTE = {
   approvedOn: '23 luglio 2023',
-  pdf: '/docs/statuto-aspcmt-giguiya.pdf',
+  pdf: 'docs/statuto-aspcmt-giguiya.pdf',
   legalForm: 'Associazione di Promozione Sociale (APS)',
 };
 
@@ -36,11 +36,11 @@ export const ORGANS = [
 ];
 
 export const MALI_PLACES = [
-  { img: '/images/mali-djenne.jpg', name: 'Djenné', text: 'La Grande Moschea di fango, patrimonio UNESCO' },
-  { img: '/images/mali-dogon.jpg', name: 'Paese Dogon', text: 'Villaggi scolpiti nella falesia' },
-  { img: '/images/mali-timbuktu.jpg', name: 'Timbuctù', text: 'La moschea di Djinguereber e la città dei manoscritti' },
-  { img: '/images/mali-niger.jpg', name: 'Fiume Niger', text: 'Le piroghe di Mopti, cuore dei commerci' },
-  { img: '/images/mali-bandiagara.jpg', name: 'Falesia di Bandiagara', text: 'Natura e cultura millenaria' },
+  { img: 'images/mali-djenne.jpg', name: 'Djenné', text: 'La Grande Moschea di fango, patrimonio UNESCO' },
+  { img: 'images/mali-dogon.jpg', name: 'Paese Dogon', text: 'Villaggi scolpiti nella falesia' },
+  { img: 'images/mali-timbuktu.jpg', name: 'Timbuctù', text: 'La moschea di Djinguereber e la città dei manoscritti' },
+  { img: 'images/mali-niger.jpg', name: 'Fiume Niger', text: 'Le piroghe di Mopti, cuore dei commerci' },
+  { img: 'images/mali-bandiagara.jpg', name: 'Falesia di Bandiagara', text: 'Natura e cultura millenaria' },
 ];
 
 export const PHOTO_CREDITS =
