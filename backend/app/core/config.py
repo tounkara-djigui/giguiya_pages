@@ -7,7 +7,8 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 class Settings:
-    DATABASE_URL = os.environ["DATABASE_URL"]
+    MONGO_URL = os.environ["MONGO_URL"]
+    DB_NAME = os.environ["DB_NAME"]
     JWT_SECRET = os.environ["JWT_SECRET"]
     FRONTEND_URL = os.environ["FRONTEND_URL"].rstrip("/")
     ADMIN_EMAIL = os.environ["ADMIN_EMAIL"].lower()

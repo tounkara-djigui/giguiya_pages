@@ -1,25 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import or_, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException
 
-from app.core.database import get_db
-from app.models import Project
+from app.core.database import NO_ID, get_db
 from app.schemas.project import ProjectOut
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
+PROJECT_SORT = [("sort_order", 1), ("created_at", 1)]
+
 
 @router.get("", response_model=list[ProjectOut])
-async def list_projects(db: AsyncSession = Depends(get_db)):
-    q = select(Project).where(Project.is_published.is_(True)).order_by(Project.sort_order, Project.created_at)
-    return (await db.execute(q)).scalars().all()
+async def list_projects():
+    return await get_db().projects.find({"is_published": True}, NO_ID).sort(PROJECT_SORT).to_list(200)
 
 
 @router.get("/{slug}", response_model=ProjectOut)
-async def get_project(slug: str, db: AsyncSession = Depends(get_db)):
-    project = (await db.execute(
-        select(Project).where(or_(Project.slug == slug, Project.id == slug), Project.is_published.is_(True))
-    )).scalar_one_or_none()
+async def get_project(slug: str):
+    project = await get_db().projects.find_one({"$or": [{"slug": slug}, {"id": slug}], "is_published": True}, NO_ID)
     if not project:
         raise HTTPException(status_code=404, detail="Progetto non trovato")
     return project

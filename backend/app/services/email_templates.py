@@ -32,19 +32,19 @@ def _button(url: str, label: str) -> str:
 
 
 def booking_confirmation(first_name: str, event) -> tuple[str, str]:
-    when = event.start_at.astimezone(TZ).strftime("%d/%m/%Y alle %H:%M")
-    url = f"{settings.FRONTEND_URL}/eventi/{event.slug}"
+    when = event["start_at"].astimezone(TZ).strftime("%d/%m/%Y alle %H:%M")
+    url = f"{settings.FRONTEND_URL}/eventi/{event['slug']}"
     body = (
         f"<p>Ciao {escape(first_name)},</p>"
-        f"<p>la tua iscrizione all'evento <strong style=\"color:#F3E5AB\">{escape(event.title)}</strong> è confermata.</p>"
+        f"<p>la tua iscrizione all'evento <strong style=\"color:#F3E5AB\">{escape(event['title'])}</strong> è confermata.</p>"
         '<table role="presentation" style="margin:18px 0;border-left:3px solid #D4A03C;padding-left:14px">'
         f"<tr><td style=\"padding:4px 14px\"><strong>Quando:</strong> {escape(when)}</td></tr>"
-        f"<tr><td style=\"padding:4px 14px\"><strong>Dove:</strong> {escape(event.location or 'Da definire')}</td></tr>"
+        f"<tr><td style=\"padding:4px 14px\"><strong>Dove:</strong> {escape(event.get('location') or 'Da definire')}</td></tr>"
         "</table>"
         f"{_button(url, 'Vedi dettagli evento')}"
         "<p>Ti aspettiamo!</p>"
     )
-    return f"Iscrizione confermata: {event.title}", _layout("Iscrizione confermata", body)
+    return f"Iscrizione confermata: {event['title']}", _layout("Iscrizione confermata", body)
 
 
 def member_welcome(first_name: str, membership_number: str, token: str) -> tuple[str, str]:

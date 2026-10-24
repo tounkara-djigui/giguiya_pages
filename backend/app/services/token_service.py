@@ -2,23 +2,26 @@ import secrets
 from datetime import timedelta
 
 from fastapi import HTTPException
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.utils import sha256, utcnow
-from app.models import AuthToken
+from app.core.database import get_db
+from app.core.utils import new_id, sha256, utcnow
 
 
-async def issue_token(db: AsyncSession, user_id: str, purpose: str, hours: int) -> str:
+async def issue_token(user_id: str, purpose: str, hours: int) -> str:
     raw = secrets.token_urlsafe(32)
-    db.add(AuthToken(token_hash=sha256(raw), user_id=user_id, purpose=purpose,
-                     expires_at=utcnow() + timedelta(hours=hours)))
+    await get_db().auth_tokens.insert_one({
+        "id": new_id(), "token_hash": sha256(raw), "user_id": user_id, "purpose": purpose,
+        "expires_at": utcnow() + timedelta(hours=hours), "used_at": None, "created_at": utcnow(),
+    })
     return raw
 
 
-async def consume_token(db: AsyncSession, raw: str, purposes: tuple[str, ...]) -> AuthToken:
-    token = (await db.execute(select(AuthToken).where(AuthToken.token_hash == sha256(raw)))).scalar_one_or_none()
-    if not token or token.purpose not in purposes or token.used_at or token.expires_at < utcnow():
+async def consume_token(raw: str, purposes: tuple[str, ...]) -> dict:
+    token = await get_db().auth_tokens.find_one_and_update(
+        {"token_hash": sha256(raw), "purpose": {"$in": list(purposes)}, "used_at": None,
+         "expires_at": {"$gt": utcnow()}},
+        {"$set": {"used_at": utcnow()}},
+    )
+    if not token:
         raise HTTPException(status_code=400, detail="Link non valido o scaduto")
-    token.used_at = utcnow()
     return token

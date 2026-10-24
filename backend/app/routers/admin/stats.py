@@ -1,31 +1,25 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter
 
-from app.core.database import get_db
+from app.core.database import NO_ID, get_db
 from app.core.utils import current_year, utcnow
-from app.models import Booking, Event, Member, Project
 from app.schemas.admin import StatsOut
 from app.services.member_service import member_out
 
 router = APIRouter()
 
 
-async def _count(db: AsyncSession, q) -> int:
-    return (await db.execute(q)).scalar_one()
-
-
 @router.get("/stats", response_model=StatsOut)
-async def stats(db: AsyncSession = Depends(get_db)):
-    members = [member_out(m) for m in (await db.execute(select(Member))).scalars().all()]
+async def stats():
+    db = get_db()
+    members = [member_out(u) for u in await db.users.find({"role": "member"}, NO_ID).to_list(10000)]
     return StatsOut(
         members_total=len(members),
         members_in_good_standing=sum(m.in_good_standing for m in members),
         members_pending_card=sum(not m.card_issued for m in members),
         members_pending_enrollment=sum(not m.enrollment_paid for m in members),
-        bookings_total=await _count(db, select(func.count()).select_from(Booking)),
-        contacts_total=await _count(db, select(func.count(func.distinct(Booking.email)))),
-        upcoming_events=await _count(db, select(func.count()).select_from(Event).where(Event.start_at >= utcnow())),
-        projects_total=await _count(db, select(func.count()).select_from(Project)),
+        bookings_total=await db.bookings.count_documents({}),
+        contacts_total=len(await db.bookings.distinct("email")),
+        upcoming_events=await db.events.count_documents({"start_at": {"$gte": utcnow()}}),
+        projects_total=await db.projects.count_documents({}),
         current_year=current_year(),
     )

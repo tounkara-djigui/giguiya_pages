@@ -4,15 +4,16 @@ import { LucideAngularModule } from 'lucide-angular';
 import { EventItem } from '../../../core/models/event.model';
 import { Icons } from '../../icons';
 import { ItDatePipe } from '../../pipes/it-date.pipe';
+import { MediaUrlPipe } from '../../pipes/media-url.pipe';
 
 @Component({
   selector: 'app-event-card',
-  imports: [RouterLink, LucideAngularModule, ItDatePipe],
+  imports: [RouterLink, LucideAngularModule, ItDatePipe, MediaUrlPipe],
   template: `
     @let e = event();
     <a [routerLink]="['/eventi', e.slug]" class="ev card-hover" [attr.data-testid]="'event-card-' + e.slug">
       <div class="media">
-        <img [src]="e.image_url || '/images/community.jpg'" [alt]="e.title" loading="lazy" />
+        <img [src]="e.image_url | mediaUrl" [alt]="e.title" loading="lazy" />
         <div class="date">
           <span class="d">{{ e.start_at | itDate: 'day' }}</span>
           <span class="m">{{ e.start_at | itDate: 'month' }}</span>

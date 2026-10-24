@@ -5,10 +5,11 @@ import { LucideAngularModule } from 'lucide-angular';
 import { Project } from '../../core/models/project.model';
 import { PublicService } from '../../core/services/public.service';
 import { Icons } from '../../shared/icons';
+import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 
 @Component({
   selector: 'app-project-detail-page',
-  imports: [RouterLink, LucideAngularModule],
+  imports: [RouterLink, LucideAngularModule, MediaUrlPipe],
   template: `
     @if (project(); as p) {
       <section class="ph page-top">
@@ -20,7 +21,7 @@ import { Icons } from '../../shared/icons';
         </div>
       </section>
       <div class="container">
-        <div class="img-frame cover fade-up delay-3"><img [src]="p.image_url || '/images/community.jpg'" [alt]="p.title" /></div>
+        <div class="img-frame cover fade-up delay-3"><img [src]="p.image_url | mediaUrl" [alt]="p.title" /></div>
       </div>
       <section class="section-tight">
         <div class="container split">

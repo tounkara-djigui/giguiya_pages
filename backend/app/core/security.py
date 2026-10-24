@@ -3,12 +3,10 @@ from datetime import datetime, timedelta
 import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, Request, Response
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.database import get_db
+from app.core.database import NO_ID, get_db
 from app.core.utils import utcnow
-from app.models import User
 
 ALGORITHM = "HS256"
 
@@ -60,7 +58,11 @@ def clear_auth_cookies(response: Response) -> None:
         response.delete_cookie(key, path="/", secure=True, samesite="none", httponly=True)
 
 
-async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> User:
+async def find_user(user_id: str) -> dict | None:
+    return await get_db().users.find_one({"id": user_id}, NO_ID)
+
+
+async def get_current_user(request: Request) -> dict:
     token = request.cookies.get("access_token")
     if not token:
         header = request.headers.get("Authorization", "")
@@ -68,19 +70,19 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     if not token:
         raise HTTPException(status_code=401, detail="Non autenticato")
     payload = decode_token(token, "access")
-    user = await db.get(User, payload["sub"])
+    user = await find_user(payload["sub"])
     if not user:
         raise HTTPException(status_code=401, detail="Utente non trovato")
     return user
 
 
-async def require_admin(user: User = Depends(get_current_user)) -> User:
-    if user.role != "admin" or not user.email_verified:
+async def require_admin(user: dict = Depends(get_current_user)) -> dict:
+    if user["role"] != "admin" or not user.get("email_verified"):
         raise HTTPException(status_code=403, detail="Accesso riservato agli amministratori")
     return user
 
 
-async def require_member(user: User = Depends(get_current_user)) -> User:
-    if user.role != "member" or not user.member:
+async def require_member(user: dict = Depends(get_current_user)) -> dict:
+    if user["role"] != "member" or not user.get("member"):
         raise HTTPException(status_code=403, detail="Accesso riservato ai soci")
     return user

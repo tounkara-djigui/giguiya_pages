@@ -75,4 +75,10 @@ export class AdminService {
   deleteProject(id: string) {
     return this.http.delete<MessageResponse>(`${this.base}/projects/${id}`);
   }
+
+  uploadImage(file: File) {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<{ url: string; path: string }>(`${this.base}/uploads`, body);
+  }
 }

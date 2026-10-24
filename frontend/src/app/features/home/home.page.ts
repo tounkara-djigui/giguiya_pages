@@ -10,10 +10,11 @@ import { EventCardComponent } from '../../shared/components/event-card/event-car
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { Icons } from '../../shared/icons';
 import { ItDatePipe } from '../../shared/pipes/it-date.pipe';
+import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink, LucideAngularModule, EventCardComponent, RevealDirective, ItDatePipe],
+  imports: [RouterLink, LucideAngularModule, EventCardComponent, RevealDirective, ItDatePipe, MediaUrlPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })

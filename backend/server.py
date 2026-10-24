@@ -6,20 +6,21 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.core.database import Base, engine
-from app.routers import admin, auth, events, members, projects
+from app.core.database import client, init_indexes
+from app.routers import admin, auth, events, files, members, projects
 from app.seed import seed
+from app.services.storage_service import init_storage
 
 ALLOWED_ORIGINS = [o for o in {settings.FRONTEND_URL, os.environ.get("APP_URL", "").rstrip("/"), "http://localhost:3000"} if o]
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    await init_indexes()
     await seed()
+    init_storage()
     yield
-    await engine.dispose()
+    client.close()
 
 
 app = FastAPI(title="Giguiya API", lifespan=lifespan)
@@ -50,7 +51,7 @@ async def health():
     return {"status": "ok"}
 
 
-for module in (auth, members, events, projects, admin):
+for module in (auth, members, events, projects, admin, files):
     api.include_router(module.router)
 
 app.include_router(api)

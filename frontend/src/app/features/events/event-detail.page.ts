@@ -6,15 +6,16 @@ import { EventItem } from '../../core/models/event.model';
 import { PublicService } from '../../core/services/public.service';
 import { Icons } from '../../shared/icons';
 import { ItDatePipe } from '../../shared/pipes/it-date.pipe';
+import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 import { BookingFormComponent } from './booking-form.component';
 
 @Component({
   selector: 'app-event-detail-page',
-  imports: [RouterLink, LucideAngularModule, ItDatePipe, BookingFormComponent],
+  imports: [RouterLink, LucideAngularModule, ItDatePipe, BookingFormComponent, MediaUrlPipe],
   template: `
     @if (event(); as e) {
       <section class="hero-ev page-top">
-        <div class="bg"><img [src]="e.image_url || '/images/community.jpg'" [alt]="e.title" /></div>
+        <div class="bg"><img [src]="e.image_url | mediaUrl" [alt]="e.title" /></div>
         <div class="container rel">
           <a routerLink="/eventi" class="link-gold back" data-testid="event-back-link"><lucide-icon [img]="i.ArrowLeft" [size]="16" /> Tutti gli eventi</a>
           <div class="row mt-3 fade-up"><span class="badge">{{ e.category }}</span>

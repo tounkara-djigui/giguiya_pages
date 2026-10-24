@@ -8,10 +8,11 @@ import { PublicService } from '../../core/services/public.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { Icons } from '../../shared/icons';
+import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 
 @Component({
   selector: 'app-projects-list-page',
-  imports: [RouterLink, LucideAngularModule, PageHeaderComponent, RevealDirective],
+  imports: [RouterLink, LucideAngularModule, PageHeaderComponent, RevealDirective, MediaUrlPipe],
   template: `
     <app-page-header overline="I nostri progetti" title="Idee che diventano" accent="impatto" image="/images/mali-dogon.jpg"
       lead="Sport, cultura e inclusione: i progetti con cui Giguiya costruisce ogni giorno una comunità più forte e aperta.">
@@ -27,7 +28,7 @@ import { Icons } from '../../shared/icons';
         }
         @for (p of projects(); track p.id; let idx = $index) {
           <article class="proj" [class.flip]="idx % 2 === 1" appReveal [attr.data-testid]="'project-row-' + p.slug">
-            <a [routerLink]="['/progetti', p.slug]" class="img-frame media"><img [src]="p.image_url || '/images/community.jpg'" [alt]="p.title" loading="lazy" /></a>
+            <a [routerLink]="['/progetti', p.slug]" class="img-frame media"><img [src]="p.image_url | mediaUrl" [alt]="p.title" loading="lazy" /></a>
             <div class="copy">
               <span class="num mono">0{{ idx + 1 }}</span>
               <div class="row"><span class="badge">{{ p.category }}</span>@if (p.year_label) { <span class="badge badge-muted">{{ p.year_label }}</span> }</div>

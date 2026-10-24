@@ -6,10 +6,11 @@ import { AdminService } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { apiError } from '../../../core/utils/api.utils';
 import { Icons } from '../../../shared/icons';
+import { ImageUploadComponent } from '../shared/image-upload.component';
 
 @Component({
   selector: 'app-project-form',
-  imports: [ReactiveFormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, LucideAngularModule, ImageUploadComponent],
   template: `
     <div class="modal-backdrop" (click)="closed.emit()">
       <div class="modal" (click)="$event.stopPropagation()" data-testid="admin-project-form-modal">
@@ -37,11 +38,12 @@ import { Icons } from '../../../shared/icons';
           <label class="field"><span class="label">Attività / punti chiave <span class="opt">(uno per riga)</span></span>
             <textarea class="input" formControlName="highlights" rows="4" data-testid="admin-project-highlights-input"></textarea></label>
           <div class="form-row">
-            <label class="field"><span class="label">URL immagine</span>
+            <label class="field"><span class="label">Immagine</span>
               <input class="input" formControlName="image_url" placeholder="/images/sport.jpg oppure https://…" data-testid="admin-project-image-input" /></label>
             <label class="field"><span class="label">Ordine</span>
               <input class="input" type="number" formControlName="sort_order" data-testid="admin-project-order-input" /></label>
           </div>
+          <app-image-upload [value]="form.controls.image_url.value" testId="admin-project-image-upload" (uploaded)="form.controls.image_url.setValue($event)" />
           <label class="checkbox"><input type="checkbox" formControlName="is_published" data-testid="admin-project-published-checkbox" /> Pubblicato sul sito</label>
           @if (error()) { <div class="alert alert-error" data-testid="admin-project-form-error">{{ error() }}</div> }
           <div class="row">

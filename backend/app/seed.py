@@ -1,12 +1,9 @@
 from datetime import timedelta
 
-from sqlalchemy import func, select
-
 from app.core.config import settings
-from app.core.database import SessionLocal
+from app.core.database import get_db
 from app.core.security import hash_password, verify_password
-from app.core.utils import TZ, utcnow
-from app.models import Event, Project, User
+from app.core.utils import TZ, new_id, utcnow
 
 PROJECTS = [
     {
@@ -78,16 +75,26 @@ def _sample_events() -> list[dict]:
     ]
 
 
+def _doc(values: dict) -> dict:
+    return {"id": new_id(), "created_at": utcnow(), "is_published": True, **values}
+
+
+EVENT_DEFAULTS = {"end_at": None, "capacity": None, "price_label": None, "image_url": None}
+
+
 async def seed() -> None:
-    async with SessionLocal() as db:
-        admin = (await db.execute(select(User).where(User.email == settings.ADMIN_EMAIL))).scalar_one_or_none()
-        if not admin:
-            db.add(User(email=settings.ADMIN_EMAIL, password_hash=hash_password(settings.ADMIN_PASSWORD),
-                        first_name="Admin", last_name="Giguiya", role="admin", email_verified=True))
-        elif not verify_password(settings.ADMIN_PASSWORD, admin.password_hash):
-            admin.password_hash = hash_password(settings.ADMIN_PASSWORD)
-        if not (await db.execute(select(func.count()).select_from(Project))).scalar_one():
-            db.add_all([Project(**p) for p in PROJECTS])
-        if not (await db.execute(select(func.count()).select_from(Event))).scalar_one():
-            db.add_all([Event(**e) for e in _sample_events()])
-        await db.commit()
+    db = get_db()
+    admin = await db.users.find_one({"email": settings.ADMIN_EMAIL})
+    if not admin:
+        await db.users.insert_one({
+            "id": new_id(), "email": settings.ADMIN_EMAIL, "password_hash": hash_password(settings.ADMIN_PASSWORD),
+            "first_name": "Admin", "last_name": "Giguiya", "phone": None, "role": "admin",
+            "email_verified": True, "created_at": utcnow(),
+        })
+    elif not verify_password(settings.ADMIN_PASSWORD, admin.get("password_hash")):
+        await db.users.update_one({"email": settings.ADMIN_EMAIL},
+                                  {"$set": {"password_hash": hash_password(settings.ADMIN_PASSWORD)}})
+    if not await db.projects.count_documents({}):
+        await db.projects.insert_many([_doc(p) for p in PROJECTS])
+    if not await db.events.count_documents({}):
+        await db.events.insert_many([_doc({**EVENT_DEFAULTS, **e}) for e in _sample_events()])

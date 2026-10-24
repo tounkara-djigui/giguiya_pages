@@ -6,10 +6,11 @@ import { AdminService } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { apiError } from '../../../core/utils/api.utils';
 import { Icons } from '../../../shared/icons';
+import { ImageUploadComponent } from '../shared/image-upload.component';
 
 @Component({
   selector: 'app-event-form',
-  imports: [ReactiveFormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, LucideAngularModule, ImageUploadComponent],
   template: `
     <div class="modal-backdrop" (click)="closed.emit()">
       <div class="modal" (click)="$event.stopPropagation()" data-testid="admin-event-form-modal">
@@ -44,8 +45,9 @@ import { Icons } from '../../../shared/icons';
             <label class="field"><span class="label">Partecipazione</span>
               <input class="input" formControlName="price_label" placeholder="es. Gratuito, 10€" data-testid="admin-event-price-input" /></label>
           </div>
-          <label class="field"><span class="label">URL immagine</span>
+          <label class="field"><span class="label">Immagine</span>
             <input class="input" formControlName="image_url" placeholder="/images/musica.jpg oppure https://…" data-testid="admin-event-image-input" /></label>
+          <app-image-upload [value]="form.controls.image_url.value" testId="admin-event-image-upload" (uploaded)="form.controls.image_url.setValue($event)" />
           <label class="checkbox"><input type="checkbox" formControlName="is_published" data-testid="admin-event-published-checkbox" /> Pubblicato sul sito</label>
           @if (error()) { <div class="alert alert-error" data-testid="admin-event-form-error">{{ error() }}</div> }
           <div class="row">

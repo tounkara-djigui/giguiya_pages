@@ -108,7 +108,7 @@
       @for (p of projects(); track p.id; let idx = $index) {
         <a [routerLink]="['/progetti', p.slug]" class="tile" [class.big]="idx === 0" appReveal [revealDelay]="idx * 120"
            [attr.data-testid]="'home-project-' + p.slug">
-          <img [src]="p.image_url || '/images/community.jpg'" [alt]="p.title" loading="lazy" />
+          <img [src]="p.image_url | mediaUrl" [alt]="p.title" loading="lazy" />
           <div class="tile-body">
             <span class="badge">{{ p.category }}</span>
             <h3>{{ p.title }}</h3>

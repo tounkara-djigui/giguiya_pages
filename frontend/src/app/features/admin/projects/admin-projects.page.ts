@@ -6,11 +6,12 @@ import { AdminService } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { apiError } from '../../../core/utils/api.utils';
 import { Icons } from '../../../shared/icons';
+import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 import { ProjectFormComponent } from './project-form.component';
 
 @Component({
   selector: 'app-admin-projects-page',
-  imports: [RouterLink, LucideAngularModule, ProjectFormComponent],
+  imports: [RouterLink, LucideAngularModule, ProjectFormComponent, MediaUrlPipe],
   template: `
     <div class="row-between">
       <div>
@@ -25,7 +26,7 @@ import { ProjectFormComponent } from './project-form.component';
       <div class="grid grid-3 mt-4">
         @for (p of list; track p.id) {
           <div class="card pcard" [attr.data-testid]="'admin-project-card-' + p.slug">
-            <div class="thumb"><img [src]="p.image_url || '/images/community.jpg'" [alt]="p.title" /></div>
+            <div class="thumb"><img [src]="p.image_url | mediaUrl" [alt]="p.title" /></div>
             <div class="row mt-3">
               <span class="badge">{{ p.category }}</span>
               @if (!p.is_published) { <span class="badge badge-muted">Bozza</span> }

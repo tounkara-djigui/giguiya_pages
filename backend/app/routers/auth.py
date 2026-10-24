@@ -1,15 +1,12 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.database import get_db
-from app.core.security import (clear_auth_cookies, decode_token, get_current_user, hash_password,
+from app.core.database import NO_ID, get_db
+from app.core.security import (clear_auth_cookies, decode_token, find_user, get_current_user, hash_password,
                                set_access_cookie, set_auth_cookies, verify_password)
-from app.core.utils import utcnow
-from app.models import LoginAttempt, User
+from app.core.utils import new_id, utcnow
 from app.schemas.auth import (AdminRegisterIn, ChangePasswordIn, EmailIn, LoginIn, MessageOut,
                               SetPasswordIn, TokenIn, UserOut)
 from app.services import email_templates as tpl
@@ -27,49 +24,41 @@ def _client_ip(request: Request) -> str:
     return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else "unknown")
 
 
-async def _register_failure(db: AsyncSession, attempt: LoginAttempt | None, identifier: str) -> None:
-    if attempt is None:
-        attempt = LoginAttempt(identifier=identifier, count=0)
-        db.add(attempt)
-    attempt.count += 1
-    if attempt.count >= MAX_ATTEMPTS:
-        attempt.locked_until = utcnow() + timedelta(minutes=LOCK_MINUTES)
-        attempt.count = 0
-    await db.commit()
+async def _register_failure(attempt: dict | None, identifier: str) -> None:
+    count = (attempt or {}).get("count", 0) + 1
+    update = {"count": count}
+    if count >= MAX_ATTEMPTS:
+        update = {"count": 0, "locked_until": utcnow() + timedelta(minutes=LOCK_MINUTES)}
+    await get_db().login_attempts.update_one({"identifier": identifier}, {"$set": update}, upsert=True)
 
 
-def _ensure_not_locked(attempt: LoginAttempt | None) -> None:
-    if attempt and attempt.locked_until and attempt.locked_until > utcnow():
+def _ensure_not_locked(attempt: dict | None) -> None:
+    if attempt and attempt.get("locked_until") and attempt["locked_until"] > utcnow():
         raise HTTPException(status_code=429, detail="Troppi tentativi. Riprova tra 15 minuti.")
 
 
-async def _authenticate(db: AsyncSession, email: str, password: str, attempt: LoginAttempt | None, identifier: str) -> User:
-    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
-    if user and verify_password(password, user.password_hash):
+async def _authenticate(email: str, password: str, attempt: dict | None, identifier: str) -> dict:
+    user = await get_db().users.find_one({"email": email}, NO_ID)
+    if user and verify_password(password, user.get("password_hash")):
         return user
-    await _register_failure(db, attempt, identifier)
-    if user and not user.password_hash:
+    await _register_failure(attempt, identifier)
+    if user and not user.get("password_hash"):
         raise HTTPException(status_code=401, detail="Password non ancora impostata: usa il link ricevuto via email")
     raise HTTPException(status_code=401, detail="Email o password non corretti")
 
 
-async def _clear_attempts(db: AsyncSession, attempt: LoginAttempt | None) -> None:
-    if attempt:
-        await db.delete(attempt)
-        await db.commit()
-
-
 @router.post("/login", response_model=UserOut)
-async def login(data: LoginIn, request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+async def login(data: LoginIn, request: Request, response: Response):
     email = data.email.lower()
     identifier = f"{_client_ip(request)}:{email}"
-    attempt = await db.get(LoginAttempt, identifier)
+    attempt = await get_db().login_attempts.find_one({"identifier": identifier})
     _ensure_not_locked(attempt)
-    user = await _authenticate(db, email, data.password, attempt, identifier)
-    if user.role == "admin" and not user.email_verified:
+    user = await _authenticate(email, data.password, attempt, identifier)
+    if user["role"] == "admin" and not user.get("email_verified"):
         raise HTTPException(status_code=403, detail="Conferma prima il tuo indirizzo email tramite il link ricevuto")
-    await _clear_attempts(db, attempt)
-    set_auth_cookies(response, user.id)
+    if attempt:
+        await get_db().login_attempts.delete_one({"identifier": identifier})
+    set_auth_cookies(response, user["id"])
     return user
 
 
@@ -80,79 +69,74 @@ async def logout(response: Response):
 
 
 @router.get("/me", response_model=UserOut)
-async def me(user: User = Depends(get_current_user)):
+async def me(user: dict = Depends(get_current_user)):
     return user
 
 
 @router.post("/refresh", response_model=UserOut)
-async def refresh(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+async def refresh(request: Request, response: Response):
     token = request.cookies.get("refresh_token")
     if not token:
         raise HTTPException(status_code=401, detail="Non autenticato")
-    payload = decode_token(token, "refresh")
-    user = await db.get(User, payload["sub"])
+    user = await find_user(decode_token(token, "refresh")["sub"])
     if not user:
         raise HTTPException(status_code=401, detail="Utente non trovato")
-    set_access_cookie(response, user.id)
+    set_access_cookie(response, user["id"])
     return user
 
 
 @router.post("/admin/register", response_model=MessageOut)
-async def admin_register(data: AdminRegisterIn, db: AsyncSession = Depends(get_db)):
+async def admin_register(data: AdminRegisterIn):
     email = data.email.lower()
     if not email.endswith("@" + settings.ADMIN_EMAIL_DOMAIN):
         raise HTTPException(status_code=400, detail=f"Solo indirizzi @{settings.ADMIN_EMAIL_DOMAIN} possono registrarsi come amministratori")
-    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
-    if user and (user.role != "admin" or user.email_verified):
+    user = await get_db().users.find_one({"email": email}, NO_ID)
+    if user and (user["role"] != "admin" or user.get("email_verified")):
         raise HTTPException(status_code=409, detail="Esiste già un account con questa email")
     if not user:
-        user = User(email=email, role="admin", email_verified=False,
-                    first_name=data.first_name.strip(), last_name=data.last_name.strip(),
-                    password_hash=hash_password(data.password))
-        db.add(user)
-    await db.flush()
-    raw = await issue_token(db, user.id, "verify_email", hours=48)
-    await db.commit()
-    subject, html = tpl.admin_verification(user.first_name, raw)
+        user = {"id": new_id(), "email": email, "role": "admin", "email_verified": False,
+                "first_name": data.first_name.strip(), "last_name": data.last_name.strip(), "phone": None,
+                "password_hash": hash_password(data.password), "created_at": utcnow()}
+        await get_db().users.insert_one(dict(user))
+    raw = await issue_token(user["id"], "verify_email", hours=48)
+    subject, html = tpl.admin_verification(user["first_name"], raw)
     sent = await try_send_email(to=email, subject=subject, html=html)
     return MessageOut(message="Account creato. Controlla la tua email per confermarlo.", email_sent=sent)
 
 
 @router.post("/verify-email", response_model=MessageOut)
-async def verify_email(data: TokenIn, db: AsyncSession = Depends(get_db)):
-    token = await consume_token(db, data.token, ("verify_email",))
-    user = await db.get(User, token.user_id)
-    user.email_verified = True
-    await db.commit()
+async def verify_email(data: TokenIn):
+    token = await consume_token(data.token, ("verify_email",))
+    await get_db().users.update_one({"id": token["user_id"]}, {"$set": {"email_verified": True}})
     return MessageOut(message="Email confermata. Ora puoi accedere.")
 
 
 @router.post("/set-password", response_model=MessageOut)
-async def set_password(data: SetPasswordIn, db: AsyncSession = Depends(get_db)):
-    token = await consume_token(db, data.token, ("set_password", "reset_password"))
-    user = await db.get(User, token.user_id)
-    user.password_hash = hash_password(data.password)
-    if user.role == "member":
-        user.email_verified = True
-    await db.commit()
+async def set_password(data: SetPasswordIn):
+    token = await consume_token(data.token, ("set_password", "reset_password"))
+    user = await find_user(token["user_id"])
+    if not user:
+        raise HTTPException(status_code=400, detail="Link non valido o scaduto")
+    update = {"password_hash": hash_password(data.password)}
+    if user["role"] == "member":
+        update["email_verified"] = True
+    await get_db().users.update_one({"id": user["id"]}, {"$set": update})
     return MessageOut(message="Password impostata. Ora puoi accedere.")
 
 
 @router.post("/forgot-password", response_model=MessageOut)
-async def forgot_password(data: EmailIn, db: AsyncSession = Depends(get_db)):
-    user = (await db.execute(select(User).where(User.email == data.email.lower()))).scalar_one_or_none()
+async def forgot_password(data: EmailIn):
+    user = await get_db().users.find_one({"email": data.email.lower()}, NO_ID)
     if user:
-        raw = await issue_token(db, user.id, "reset_password", hours=1)
-        await db.commit()
-        subject, html = tpl.password_reset(user.first_name, raw)
-        await try_send_email(to=user.email, subject=subject, html=html)
+        raw = await issue_token(user["id"], "reset_password", hours=1)
+        subject, html = tpl.password_reset(user["first_name"], raw)
+        await try_send_email(to=user["email"], subject=subject, html=html)
     return MessageOut(message="Se l'email è registrata, riceverai un link per reimpostare la password.")
 
 
 @router.post("/change-password", response_model=MessageOut)
-async def change_password(data: ChangePasswordIn, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    if not verify_password(data.current_password, user.password_hash):
+async def change_password(data: ChangePasswordIn, user: dict = Depends(get_current_user)):
+    if not verify_password(data.current_password, user.get("password_hash")):
         raise HTTPException(status_code=400, detail="Password attuale non corretta")
-    user.password_hash = hash_password(data.new_password)
-    await db.commit()
+    await get_db().users.update_one({"id": user["id"]}, {"$set": {"password_hash": hash_password(data.new_password)}})
     return MessageOut(message="Password aggiornata")

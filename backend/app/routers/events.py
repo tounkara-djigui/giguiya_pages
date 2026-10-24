@@ -1,11 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import or_, select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException, Query
+from pymongo.errors import DuplicateKeyError
 
-from app.core.database import get_db
-from app.core.utils import utcnow
-from app.models import Booking, Event
+from app.core.database import NO_ID, get_db
+from app.core.utils import new_id, utcnow
 from app.schemas.event import BookingCreatedOut, BookingIn, EventOut
 from app.services import email_templates as tpl
 from app.services.email_service import try_send_email
@@ -14,55 +11,49 @@ from app.services.event_service import booking_counts, event_out, events_out
 router = APIRouter(prefix="/events", tags=["events"])
 
 
-async def _published_event(db: AsyncSession, slug: str) -> Event:
-    event = (await db.execute(
-        select(Event).where(or_(Event.slug == slug, Event.id == slug), Event.is_published.is_(True))
-    )).scalar_one_or_none()
+async def _published_event(slug: str) -> dict:
+    event = await get_db().events.find_one({"$or": [{"slug": slug}, {"id": slug}], "is_published": True}, NO_ID)
     if not event:
         raise HTTPException(status_code=404, detail="Evento non trovato")
     return event
 
 
 @router.get("", response_model=list[EventOut])
-async def list_events(scope: str = Query("upcoming", pattern="^(upcoming|past|all)$"),
-                      category: str | None = None, db: AsyncSession = Depends(get_db)):
-    q = select(Event).where(Event.is_published.is_(True))
+async def list_events(scope: str = Query("upcoming", pattern="^(upcoming|past|all)$"), category: str | None = None):
+    query: dict = {"is_published": True}
     now = utcnow()
+    sort = -1
     if scope == "upcoming":
-        q = q.where(Event.start_at >= now).order_by(Event.start_at.asc())
+        query["start_at"], sort = {"$gte": now}, 1
     elif scope == "past":
-        q = q.where(Event.start_at < now).order_by(Event.start_at.desc())
-    else:
-        q = q.order_by(Event.start_at.desc())
+        query["start_at"] = {"$lt": now}
     if category:
-        q = q.where(Event.category == category)
-    return await events_out(db, list((await db.execute(q)).scalars().all()))
+        query["category"] = category
+    events = await get_db().events.find(query, NO_ID).sort("start_at", sort).to_list(500)
+    return await events_out(events)
 
 
 @router.get("/{slug}", response_model=EventOut)
-async def get_event(slug: str, db: AsyncSession = Depends(get_db)):
-    event = await _published_event(db, slug)
-    counts = await booking_counts(db, [event.id])
-    return event_out(event, counts.get(event.id, 0))
+async def get_event(slug: str):
+    event = await _published_event(slug)
+    return event_out(event, (await booking_counts([event["id"]])).get(event["id"], 0))
 
 
 @router.post("/{slug}/bookings", response_model=BookingCreatedOut, status_code=201)
-async def book_event(slug: str, data: BookingIn, db: AsyncSession = Depends(get_db)):
-    event = await _published_event(db, slug)
-    if event.start_at < utcnow():
+async def book_event(slug: str, data: BookingIn):
+    event = await _published_event(slug)
+    if event["start_at"] < utcnow():
         raise HTTPException(status_code=400, detail="Le prenotazioni per questo evento sono chiuse")
-    if event.capacity:
-        count = (await booking_counts(db, [event.id])).get(event.id, 0)
-        if count >= event.capacity:
+    if event.get("capacity"):
+        if (await booking_counts([event["id"]])).get(event["id"], 0) >= event["capacity"]:
             raise HTTPException(status_code=400, detail="Evento al completo")
-    booking = Booking(event_id=event.id, first_name=data.first_name.strip(), last_name=data.last_name.strip(),
-                      email=data.email.lower(), phone=data.phone or None)
-    db.add(booking)
+    booking = {"id": new_id(), "event_id": event["id"], "first_name": data.first_name.strip(),
+               "last_name": data.last_name.strip(), "email": data.email.lower(), "phone": data.phone or None,
+               "created_at": utcnow()}
     try:
-        await db.commit()
-    except IntegrityError:
-        await db.rollback()
+        await get_db().bookings.insert_one(dict(booking))
+    except DuplicateKeyError:
         raise HTTPException(status_code=409, detail="Sei già iscritto a questo evento con questa email")
-    subject, html = tpl.booking_confirmation(booking.first_name, event)
-    sent = await try_send_email(to=booking.email, subject=subject, html=html)
-    return BookingCreatedOut(id=booking.id, message="Prenotazione confermata!", email_sent=sent)
+    subject, html = tpl.booking_confirmation(booking["first_name"], event)
+    sent = await try_send_email(to=booking["email"], subject=subject, html=html)
+    return BookingCreatedOut(id=booking["id"], message="Prenotazione confermata!", email_sent=sent)
