@@ -17,7 +17,8 @@ def _layout(title: str, body: str) -> str:
         '</td></tr>'
         f'<tr><td style="padding:28px 36px;font-size:15px;line-height:1.65;color:#D4D4D8">{body}</td></tr>'
         '<tr><td style="padding:20px 36px;border-top:1px solid #3a2f1a;font-size:12px;color:#71717A">'
-        f'Email inviata da {brand} – Torino. Non ti chiederemo mai la password o dati di pagamento via email.'
+        f'Email inviata da {brand} – Corso Casale 97, Torino · info@giguiya.it · 320 155 0017.<br>'
+        'Non ti chiederemo mai la password o dati di pagamento via email.'
         '</td></tr></table></td></tr></table>'
     )
 

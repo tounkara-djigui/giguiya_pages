@@ -1,4 +1,5 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { Project } from '../../core/models/project.model';
@@ -68,6 +69,7 @@ import { Icons } from '../../shared/icons';
 })
 export default class ProjectDetailPage {
   private api = inject(PublicService);
+  private title = inject(Title);
   readonly slug = input.required<string>();
   protected readonly i = Icons;
   protected project = signal<Project | null>(null);
@@ -76,7 +78,10 @@ export default class ProjectDetailPage {
   constructor() {
     effect(() => {
       this.api.project(this.slug()).subscribe({
-        next: (p) => this.project.set(p),
+        next: (p) => {
+          this.project.set(p);
+          this.title.setTitle(`${p.title} · Giguiya`);
+        },
         error: () => this.notFound.set(true),
       });
     });

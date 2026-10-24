@@ -1,0 +1,43 @@
+{
+  "summary": "First full run. Backend: 18/18 pytest cases pass (public events/projects, booking validation/duplicate 409/capacity full 400, member register/409/privacy 422, set-password via DB-inserted token, member dashboard incl. bookings matched by email (case-insensitive), admin toggles enrollment/fee/card -> in_good_standing, fee year validation, contacts is_member, change-password, logout, member delete, admin event CRUD (end<start 400), project CRUD (highlights), admin self-register domain 400 / unverified 403 / verify-email single-use / login after verify, bcrypt $2b$, httpOnly+Secure+SameSite=None cookies, CORS explicit origin + credentials, brute force 5x401 then 429, 401 on admin without auth, 403 member on /api/admin/*). Frontend (Playwright, desktop 1920 + mobile 390): all public routes + 404 render with correct titles/h1; navbar links + Accesso dropdown (login/registrazione links) work; mobile toggle/panel/links work and close on navigation, no horizontal overflow; booking form required validation, success state, duplicate -> booking-error; /diventa-socio privacy required, membership-success, duplicate error; admin-register frontend domain error + success; unverified admin login shows 403 message; verify-email page success then login -> /admin; admin dashboard stats; Soci toggles change badge Non in regola -> In regola; detail modal notes persist (verified in DB), year chips, delete with confirm; filters; Interessati list; Events create/edit/delete via modal with datetime-local (local time preserved 18:30), bookings modal; Projects create/edit/delete, highlights one-per-line (blank lines stripped), visible on /progetti; set-password page (mismatch blocked, invalid token error, missing token message) -> login -> /area-socio shows tessera card, all status badges, fees list, bookings list; change password + re-login with new password; route guards redirect to /accesso?redirect=...; member hitting /admin redirected to /area-socio; logout clears session (/api/auth/me 401). No functional bugs found.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "email_service.try_send_email", "issue": "Emergent email API returned 429 'rate_limited' after a burst of ~8 sends during testing; all subsequent sends in the session failed (email_sent=false). App degrades gracefully (UI shows 'non siamo riusciti a inviare l'email'), but there is no retry/backoff and 'rate_limited' is logged as a generic failure. Consider a small retry with backoff for 429."},
+      {"endpoint": "email_service.try_send_email", "issue": "try_send_email only catches HTTPException; _assert_safe_email raises ValueError, which would surface as 500 AFTER the booking/member row was already committed (user sees error but record exists). Catch ValueError too (log + return False)."},
+      {"endpoint": "POST /api/members/register", "issue": "next_membership_number uses SELECT max+1 with no lock; two concurrent registrations can collide on unique membership_number -> unhandled IntegrityError 500. Use a sequence or retry on IntegrityError."},
+      {"endpoint": "POST /api/auth/admin/register", "issue": "Re-registering an existing UNVERIFIED @giguiya.it admin overwrites its name/password without any check (anyone can reset a pending admin's password). Low risk since email verification still required, but consider rejecting or only re-sending the link."},
+      {"endpoint": "POST /api/auth/logout", "issue": "Refresh tokens are stateless JWT (7+ days); logout only clears cookies, a stolen refresh token stays valid until expiry. Acceptable for MVP."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Event detail", "issues": ["Browser tab title is generic 'Evento · Giguiya' / 'Progetto · Giguiya' instead of the event/project name"]},
+      {"screen": "Mobile navbar (390px)", "issues": ["Logo subtitle 'ASSOCIAZIONE · TORINO' wraps onto two lines next to the 'Diventa socio' pill; header feels cramped", "Mobile panel background is slightly translucent during fadeUp; hero heading visible behind menu items"]},
+      {"screen": "Admin layout", "issues": ["Public top navbar (centered max-width container) is shown above the admin sidebar layout; navbar content is not aligned with the admin content area - consider a dedicated admin top bar or full-width alignment"]},
+      {"screen": "Admin Interessati / Bookings modal", "issues": ["Names displayed 'Cognome Nome' (e.g. 'Booker TEST_Ui') while member detail modal shows 'Nome Cognome' - inconsistent ordering"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_giguiya_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Add retry/backoff for email 429 rate_limited responses (optional) and catch ValueError in try_send_email to avoid 500 after commit",
+    "Make membership_number generation concurrency-safe",
+    "Optional: dynamic page titles for event/project detail; tidy mobile header at 390px; admin top bar alignment"
+  ],
+  "critical_code_review_comments": [
+    "email_service.try_send_email: catch Exception/ValueError, not only HTTPException",
+    "members.next_membership_number: race condition on unique membership_number",
+    "auth.admin_register: unverified admin record can be overwritten by anyone",
+    "admin/contacts: loads all bookings + all member emails in memory per request - fine for small association, would need pagination at scale"
+  ],
+  "updated_files": ["/app/backend/tests/test_giguiya_api.py"],
+  "success_rate": {"backend": "100% (18/18)", "frontend": "100% of tested flows"},
+  "test_credentials": "Admin admin@giguiya.it / Giguiya@Admin2026 (from /app/memory/test_credentials.md) - works",
+  "seed_data_creation": "All TEST_ data (bookings, members, admins test_*@giguiya.it, events, projects, login_attempts) deleted from Postgres at end. Remaining: 1 admin, 3 seeded projects, 3 seeded events. One pre-existing booking (delivered@resend.dev, first_name 'TEST' on laboratorio-treccine-maliane) was NOT created by this testing agent and was left untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run backend tests serially: pytest /app/backend/tests/test_giguiya_api.py -n 0 (xdist is installed and auto-enabled; module cleanup fixture races under parallel workers). Tests create set_password/verify_email tokens by inserting sha256(raw) into auth_tokens via psql. Email API may be rate-limited (429) after bursts - bookings/registrations still succeed with email_sent=false. Angular app: click mobile toggle only after networkidle + ~1s (pre-hydration clicks are ignored).",
+  "rca of the issue": "Email failures during the run: backend log shows 'Email send failed: 429 {\"code\":\"rate_limited\"}' from integrations.emergentagent.com after rapid sends from the test suite - external rate limit, not an app bug."
+}

@@ -1,4 +1,5 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { EventItem } from '../../core/models/event.model';
@@ -74,6 +75,7 @@ import { BookingFormComponent } from './booking-form.component';
 })
 export default class EventDetailPage {
   private api = inject(PublicService);
+  private title = inject(Title);
   readonly slug = input.required<string>();
   protected readonly i = Icons;
   protected event = signal<EventItem | null>(null);
@@ -91,7 +93,10 @@ export default class EventDetailPage {
 
   private load(slug: string): void {
     this.api.event(slug).subscribe({
-      next: (e) => this.event.set(e),
+      next: (e) => {
+        this.event.set(e);
+        this.title.setTitle(`${e.title} · Giguiya`);
+      },
       error: () => this.notFound.set(true),
     });
   }

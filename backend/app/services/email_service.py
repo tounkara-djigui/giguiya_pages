@@ -1,3 +1,4 @@
+import asyncio
 import ipaddress
 import logging
 import re
@@ -108,6 +109,9 @@ async def send_email(*, to: str, subject: str, html: str) -> str | None:
         if code in ("insufficient_credits", "integration_disabled", "daily_limit_reached"):
             logger.warning(f"Email paused: {code} ({e.response.status_code}): {e.response.text}")
             raise HTTPException(status_code=503, detail="Email temporaneamente non disponibile")
+        if e.response.status_code == 429:
+            logger.warning(f"Email rate limited: {e.response.text}")
+            raise HTTPException(status_code=429, detail="Troppi invii email, riprova tra poco")
         logger.error(f"Email send failed: {e.response.status_code} {e.response.text}")
         raise HTTPException(status_code=502, detail="Invio email non riuscito")
     except Exception as e:
@@ -116,8 +120,15 @@ async def send_email(*, to: str, subject: str, html: str) -> str | None:
 
 
 async def try_send_email(*, to: str, subject: str, html: str) -> bool:
-    try:
-        await send_email(to=to, subject=subject, html=html)
-        return True
-    except HTTPException:
-        return False
+    for attempt in range(2):
+        try:
+            await send_email(to=to, subject=subject, html=html)
+            return True
+        except HTTPException as e:
+            if e.status_code != 429 or attempt:
+                return False
+            await asyncio.sleep(2)
+        except ValueError as e:
+            logger.error(f"Email blocked by guardrail: {e}")
+            return False
+    return False

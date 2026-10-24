@@ -22,7 +22,7 @@ import { LogoComponent } from '../logo/logo.component';
         <div class="cols">
           <div class="stack">
             <app-logo />
-            <p class="muted small">Associazione della comunità maliana a Torino: cultura, sport e inclusione aperti a tutta la cittadinanza.</p>
+            <p class="muted small">{{ site.fullName }} – {{ site.acronym }}. Cultura, sport e inclusione aperti a tutta la cittadinanza.</p>
           </div>
           <div class="stack">
             <span class="label">Esplora</span>
@@ -39,13 +39,13 @@ import { LogoComponent } from '../logo/logo.component';
           </div>
           <div class="stack">
             <span class="label">Contatti</span>
-            <span class="info-row"><lucide-icon [img]="i.MapPin" [size]="16" /> {{ site.address }}</span>
-            <span class="info-row"><lucide-icon [img]="i.Mail" [size]="16" /> {{ site.email }}</span>
-            <span class="info-row"><lucide-icon [img]="i.Phone" [size]="16" /> {{ site.phone }}</span>
+            <a class="info-row f-link" href="https://maps.google.com/?q=Corso+Casale+97+Torino" target="_blank" rel="noopener" data-testid="footer-address"><lucide-icon [img]="i.MapPin" [size]="16" /> {{ site.address }}</a>
+            <a class="info-row f-link" [href]="'mailto:' + site.email" data-testid="footer-email"><lucide-icon [img]="i.Mail" [size]="16" /> {{ site.email }}</a>
+            <a class="info-row f-link" [href]="'tel:' + site.phoneHref" data-testid="footer-phone"><lucide-icon [img]="i.Phone" [size]="16" /> {{ site.phone }}</a>
           </div>
         </div>
         <div class="bottom">
-          <span>© {{ year }} Associazione Giguiya · C.F. {{ site.fiscalCode }}</span>
+          <span>© {{ year }} {{ site.acronym }} · C.F. {{ site.fiscalCode }}</span>
           <span class="mono">Torino · Mali</span>
         </div>
       </div>

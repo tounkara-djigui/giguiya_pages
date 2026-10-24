@@ -101,12 +101,12 @@
 }
 
 .mobile-panel {
-  background: rgba(12, 13, 16, 0.98);
+  background: #0c0d10;
   border-bottom: 1px solid var(--gold-border);
   padding: 16px 24px 28px;
   display: flex;
   flex-direction: column;
-  animation: fadeUp 0.3s var(--ease) both;
+  animation: slideDown 0.3s var(--ease) both;
   max-height: calc(100vh - var(--nav-h));
   overflow-y: auto;
 }

@@ -20,6 +20,7 @@ import { Icons } from '../../shared/icons';
           <span class="overline">La nostra missione</span>
           <h2 class="h2 mt-2">Valorizzare le radici, <span class="gold-text">costruire cittadinanza.</span></h2>
           <p class="lead mt-3">
+            {{ site.fullName }} – <strong class="gold-strong">{{ site.acronym }}</strong>.
             Lavoriamo per creare occasioni di incontro tra culture, sostenere i percorsi di inclusione della comunità
             maliana e promuovere lo sport e la cultura come strumenti di partecipazione.
           </p>
@@ -56,11 +57,12 @@ import { Icons } from '../../shared/icons';
           </div>
         </div>
         <aside class="card" appReveal [revealDelay]="150">
-          <span class="overline">Contatti</span>
+          <div class="logo-card"><img src="/images/logo-full.jpg" alt="Logo ASPCMT Giguiya" data-testid="about-full-logo" /></div>
+          <span class="overline mt-4" style="display: flex">Contatti</span>
           <div class="stack mt-3">
-            <span class="info-row"><lucide-icon [img]="i.MapPin" [size]="18" /> {{ site.address }}</span>
-            <span class="info-row"><lucide-icon [img]="i.Mail" [size]="18" /> {{ site.email }}</span>
-            <span class="info-row"><lucide-icon [img]="i.Phone" [size]="18" /> {{ site.phone }}</span>
+            <a class="info-row" href="https://maps.google.com/?q=Corso+Casale+97+Torino" target="_blank" rel="noopener" data-testid="about-address"><lucide-icon [img]="i.MapPin" [size]="18" /> {{ site.address }}</a>
+            <a class="info-row" [href]="'mailto:' + site.email" data-testid="about-email"><lucide-icon [img]="i.Mail" [size]="18" /> {{ site.email }}</a>
+            <a class="info-row" [href]="'tel:' + site.phoneHref" data-testid="about-phone"><lucide-icon [img]="i.Phone" [size]="18" /> {{ site.phone }}</a>
           </div>
           <hr class="divider mt-4" />
           <a routerLink="/diventa-socio" class="btn btn-gold btn-block mt-4" data-testid="about-diventa-socio-button">Diventa socio</a>
@@ -70,6 +72,9 @@ import { Icons } from '../../shared/icons';
   `,
   styles: `
     .tall { aspect-ratio: 4/5; }
+    .logo-card { background: #fff; border-radius: 14px; padding: 18px; display: flex; justify-content: center; }
+    .logo-card img { max-height: 240px; width: auto; }
+    .gold-strong { color: var(--gold-light); font-weight: 500; }
     .vals { display: grid; gap: 22px; }
     .val { display: flex; gap: 16px; }
     .val lucide-icon { color: var(--gold); margin-top: 4px; flex-shrink: 0; }

@@ -93,10 +93,10 @@ async def admin_register(data: AdminRegisterIn, db: AsyncSession = Depends(get_d
     if user and (user.role != "admin" or user.email_verified):
         raise HTTPException(status_code=409, detail="Esiste già un account con questa email")
     if not user:
-        user = User(email=email, role="admin", email_verified=False, first_name="", last_name="")
+        user = User(email=email, role="admin", email_verified=False,
+                    first_name=data.first_name.strip(), last_name=data.last_name.strip(),
+                    password_hash=hash_password(data.password))
         db.add(user)
-    user.first_name, user.last_name = data.first_name.strip(), data.last_name.strip()
-    user.password_hash = hash_password(data.password)
     await db.flush()
     raw = await issue_token(db, user.id, "verify_email", hours=48)
     await db.commit()

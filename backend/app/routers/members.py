@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -40,14 +41,21 @@ async def register_member(data: MemberRegisterIn, db: AsyncSession = Depends(get
         raise HTTPException(status_code=409, detail="Esiste già un account con questa email")
     user = User(email=email, role="member", first_name=data.first_name.strip(),
                 last_name=data.last_name.strip(), phone=data.phone or None)
-    number = await next_membership_number(db)
     user.member = Member(
-        membership_number=number, birth_date=data.birth_date, birth_place=data.birth_place,
+        membership_number="", birth_date=data.birth_date, birth_place=data.birth_place,
         fiscal_code=(data.fiscal_code or "").upper() or None, address=data.address, city=data.city,
     )
-    db.add(user)
-    await db.flush()
-    sent = await send_member_invite(db, user, number)
+    for attempt in range(5):
+        db.add(user)
+        user.member.membership_number = await next_membership_number(db)
+        try:
+            async with db.begin_nested():
+                await db.flush()
+            break
+        except IntegrityError:
+            if attempt == 4:
+                raise HTTPException(status_code=409, detail="Esiste già un account con questa email")
+    sent = await send_member_invite(db, user, user.member.membership_number)
     return MessageOut(message="Domanda di iscrizione ricevuta! Controlla la tua email.", email_sent=sent)
 
 
