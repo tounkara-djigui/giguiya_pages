@@ -1,0 +1,59 @@
+<div class="row-between">
+  <div>
+    <span class="overline">Gestione soci</span>
+    <h1 class="admin-title mt-2">Soci</h1>
+    <p class="muted mt-1">Verifica chi è socio, lo stato dei pagamenti (iscrizione 5€ e quota annuale 60€) e il rilascio delle tessere.</p>
+  </div>
+  <button class="btn btn-ghost btn-sm" (click)="exportCsv()" data-testid="admin-members-export-button"><lucide-icon [img]="i.Download" [size]="16" /> Esporta CSV</button>
+</div>
+
+<div class="toolbar">
+  <div class="search">
+    <lucide-icon [img]="i.Search" [size]="16" />
+    <input class="input" placeholder="Cerca per nome, email o n° socio" [(ngModel)]="q" (ngModelChange)="onSearch()" data-testid="admin-members-search-input" />
+  </div>
+  @for (f of filters; track f.id) {
+    <button class="chip" [class.active]="status() === f.id" (click)="setStatus(f.id)" [attr.data-testid]="'admin-members-filter-' + f.id">{{ f.label }}</button>
+  }
+</div>
+
+@if (members(); as list) {
+  @if (list.length) {
+    <div class="table-wrap">
+      <table class="table" data-testid="admin-members-table">
+        <thead>
+          <tr><th>Socio</th><th>N° socio</th><th>Iscrizione</th><th>Quota {{ list[0].current_year }}</th><th>Tessera</th><th>Stato</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (m of list; track m.id) {
+            <tr [attr.data-testid]="'admin-member-row-' + m.id">
+              <td>
+                <strong style="font-weight: 500">{{ m.last_name }} {{ m.first_name }}</strong>
+                <div class="dim" style="font-size: .8rem">{{ m.email }}</div>
+              </td>
+              <td class="mono" style="font-size: .82rem">{{ m.membership_number }}</td>
+              <td><button class="switch" [class.on]="m.enrollment_paid" (click)="toggle(m, 'enrollment_paid')" [attr.aria-pressed]="m.enrollment_paid" title="Iscrizione pagata" [attr.data-testid]="'admin-member-enrollment-toggle-' + m.id"></button></td>
+              <td><button class="switch" [class.on]="m.current_year_paid" (click)="toggleFee(m)" [attr.aria-pressed]="m.current_year_paid" title="Quota annuale pagata" [attr.data-testid]="'admin-member-fee-toggle-' + m.id"></button></td>
+              <td><button class="switch" [class.on]="m.card_issued" (click)="toggle(m, 'card_issued')" [attr.aria-pressed]="m.card_issued" title="Tessera rilasciata" [attr.data-testid]="'admin-member-card-toggle-' + m.id"></button></td>
+              <td>
+                <span class="badge" [class.badge-green]="m.in_good_standing" [class.badge-red]="!m.in_good_standing" [attr.data-testid]="'admin-member-status-' + m.id">
+                  {{ m.in_good_standing ? 'In regola' : 'Non in regola' }}
+                </span>
+              </td>
+              <td><button class="btn btn-ghost btn-sm" (click)="selected.set(m)" [attr.data-testid]="'admin-member-detail-button-' + m.id">Dettagli</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="dim mt-2" style="font-size: .82rem">{{ list.length }} soci · iscritti dal più recente: {{ list[0].created_at | itDate: 'date' }}</p>
+  } @else {
+    <div class="empty" data-testid="admin-members-empty">Nessun socio trovato.</div>
+  }
+} @else {
+  <div class="skeleton" style="height: 300px"></div>
+}
+
+@if (selected(); as s) {
+  <app-member-detail [member]="s" (closed)="selected.set(null)" (changed)="replace($event)" (deleted)="removed($event)" />
+}

@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "name": "Giguiya - Associazione Maliana Torino",
+    "theme": "Elegante Scuro con Accenti Dorati (Dark Luxury & Golden Elegance)",
+    "language": "Italian",
+    "framework": "Angular 20 Standalone Components",
+    "styling": "Custom SCSS with CSS Variables & Utility Classes",
+    "icons": "lucide-angular",
+    "typography_fonts": ["Cormorant Garamond", "Outfit", "JetBrains Mono"]
+  },
+  "colors": {
+    "bg_root": "#0C0D10",
+    "bg_card": "#14161C",
+    "bg_card_hover": "#1A1D24",
+    "bg_surface_elevated": "#1E222B",
+    "gold_primary": "#D4A03C",
+    "gold_light": "#F3E5AB",
+    "gold_dark": "#9A6B1F",
+    "gold_metallic_gradient": "linear-gradient(135deg, #F3E5AB 0%, #D4A03C 50%, #9A6B1F 100%)",
+    "gold_border_subtle": "rgba(212, 160, 60, 0.2)",
+    "gold_border_glow": "rgba(212, 160, 60, 0.5)",
+    "text_primary": "#F4F4F6",
+    "text_secondary": "#A1A1AA",
+    "text_muted": "#71717A",
+    "accent_green_success": "#10B981",
+    "accent_red_alert": "#EF4444",
+    "accent_blue_info": "#3B82F6"
+  },
+  "typography": {
+    "font_family_heading": "'Cormorant Garamond', Georgia, serif",
+    "font_family_body": "'Outfit', system-ui, sans-serif",
+    "font_family_mono": "'JetBrains Mono', monospace",
+    "sizes": {
+      "h1_hero": "clamp(2.5rem, 5vw, 4rem)",
+      "h2_section": "clamp(1.8rem, 3.5vw, 2.75rem)",
+      "h3_card": "1.5rem",
+      "body_regular": "1rem",
+      "body_small": "0.875rem",
+      "label_overline": "0.75rem"
+    },
+    "letter_spacing": {
+      "headings": "-0.02em",
+      "overlines": "0.18em"
+    }
+  },
+  "layout_and_spacing": {
+    "navbar": {
+      "style": "Sticky top bar with glassmorphism blur and subtle gold bottom hairline",
+      "background": "rgba(12, 13, 16, 0.88)",
+      "backdrop_blur": "blur(16px)",
+      "height": "76px",
+      "z_index": 50,
+      "items": [
+        { "label": "Home", "path": "/" },
+        { "label": "Eventi", "path": "/eventi" },
+        { "label": "Progetti", "path": "/progetti" },
+        { "label": "Chi Siamo", "path": "/chi-siamo" },
+        { "label": "5x1000", "path": "/5x1000" },
+        { "label": "Diventa Socio", "path": "/diventa-socio" },
+        { "label": "Accesso", "path": "/accesso" }
+      ]
+    },
+    "grid_bento": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8",
+    "card_padding": "p-6 md:p-8",
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  },
+  "visual_enhancers": {
+    "gold_glow_shadow": "0 10px 30px -10px rgba(212, 160, 60, 0.25)",
+    "gold_halo": "radial-gradient(circle at 50% 0%, rgba(212, 160, 60, 0.15) 0%, transparent 70%)",
+    "card_border_style": "1px solid rgba(212, 160, 60, 0.2)",
+    "glass_panel": "background: rgba(20, 22, 28, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(212, 160, 60, 0.25);"
+  },
+  "image_urls": {
+    "hero_banner": "https://images.pexels.com/photos/28146394/pexels-photo-28146394.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "community_unity": "https://images.pexels.com/photos/30100549/pexels-photo-30100549.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "sport_football_team": "https://images.pexels.com/photos/38702717/pexels-photo-38702717.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "intrecci_treccine_maliane": "https://images.unsplash.com/photo-1673470907547-1c0c6a996095?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "intrecci_cucina_maliana": "https://images.pexels.com/photos/6192003/pexels-photo-6192003.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "progetto_baliba_intersos_unhcr": "https://images.pexels.com/photos/6193432/pexels-photo-6193432.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "gite_eventi_musicali": "https://images.unsplash.com/photo-1572955304332-bf714bd49add?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "key_functionalities": {
+    "public": [
+      "Home page with Hero, Mission, Impact Metrics, Projects Preview, Upcoming Events, 5x1000 Banner",
+      "Eventi list page with category filters & detail drawer/modal with Booking Form (Nome, Cognome, Email obbligatorio, Telefono opzionale, instant email confirmation toast/modal)",
+      "Progetti Showcase: 1. Squadra Maschile Calcio (Campionato Italiano), 2. Intrecci di Comunità (Laboratori Treccine & Cucina Maliana, Gite, Eventi Musicali), 3. Progetto Baliba (Sportello di ascolto UNHCR & INTERSOS 2023)",
+      "Chi Siamo with Statuto pdf preview modal / download link",
+      "5x1000 donation details with copyable Tax Code (Codice Fiscale)",
+      "Diventa Socio form: 5€ iscrizione + 60€ quota annuale, step-by-step procedure & status tracking note"
+    ],
+    "member_area": [
+      "Member Login / Registration",
+      "Personal Dashboard showing Tessera Digitale with QR placeholder",
+      "Payment verification status (Iscrizione 5€ status, Quota Annuale 60€ status)",
+      "Reserved event bookings list"
+    ],
+    "admin_area": [
+      "Admin Login and self-service signup limited to @giguiya.it domain with email verification modal",
+      "Admin Dashboard overview (Total soci, Active payments, Event bookings, Active projects)",
+      "Gestione Soci (search, mark paid 5€/60€, toggle tessera issued)",
+      "Gestione Interessati / Event Bookings per event",
+      "Gestione Eventi & Progetti CRUD"
+    ]
+  },
+  "testing_attributes": {
+    "rule": "Every button, input, navigation link, card item, form element, and badge MUST have a data-testid attribute in kebab-case",
+    "examples": [
+      "data-testid='navbar-home-link'",
+      "data-testid='event-booking-submit-button'",
+      "data-testid='socio-registration-email-input'",
+      "data-testid='admin-login-button'",
+      "data-testid='tessera-status-badge'"
+    ]
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Follow Angular 20 standalone component standards.",
+    "Do NOT use transparent backgrounds on headers, dropdowns, or modals. Use heavy blur (backdrop-filter: blur(16px)) with solid tinted dark background rgba(20, 22, 28, 0.95).",
+    "Ensure APCA gold-on-dark contrast ratio requirements: headlines use gold (#D4A03C) or off-white (#F4F4F6) with subtle dark shadows.",
+    "All interactive elements must have clear hover states with gold hairline glow borders and smooth CSS transitions (transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease).",
+    "Include data-testid on all interactive and data display components."
+  ]
+}

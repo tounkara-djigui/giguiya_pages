@@ -1,0 +1,27 @@
+:root {
+  --bg-root: #0c0d10;
+  --bg-card: #14161c;
+  --bg-card-hover: #1a1d24;
+  --bg-elevated: #1e222b;
+  --gold: #d4a03c;
+  --gold-light: #f3e5ab;
+  --gold-dark: #9a6b1f;
+  --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4a03c 50%, #9a6b1f 100%);
+  --gold-border: rgba(212, 160, 60, 0.2);
+  --gold-border-strong: rgba(212, 160, 60, 0.5);
+  --gold-glow: 0 10px 30px -10px rgba(212, 160, 60, 0.25);
+  --gold-halo: radial-gradient(circle at 50% 0%, rgba(212, 160, 60, 0.15) 0%, transparent 70%);
+  --text: #f4f4f6;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --green: #10b981;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 18px;
+  --radius-sm: 10px;
+  --nav-h: 76px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,0 +1,66 @@
+<header class="nav" [class.scrolled]="scrolled() || mobileOpen()" data-testid="navbar">
+  <div class="container nav-inner">
+    <a routerLink="/" class="brand" data-testid="navbar-logo-link">
+      <app-logo />
+    </a>
+
+    <nav class="links hide-mobile" aria-label="Navigazione principale">
+      @for (l of links; track l.path) {
+        <a [routerLink]="l.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: l.exact }"
+           class="nav-link" [attr.data-testid]="'navbar-' + l.id + '-link'">{{ l.label }}</a>
+      }
+    </nav>
+
+    <div class="actions">
+      @if (auth.user(); as u) {
+        <a [routerLink]="auth.homeFor(u)" class="btn btn-ghost btn-sm hide-mobile" data-testid="navbar-area-link">
+          <lucide-icon [img]="u.role === 'admin' ? i.LayoutDashboard : i.IdCard" [size]="16" />
+          {{ u.role === 'admin' ? 'Gestione' : 'Area socio' }}
+        </a>
+        <button class="btn btn-ghost btn-sm btn-icon hide-mobile" (click)="auth.logout()" title="Esci" data-testid="navbar-logout-button">
+          <lucide-icon [img]="i.LogOut" [size]="16" />
+        </button>
+      } @else {
+        <div class="access hide-mobile">
+          <button class="btn btn-ghost btn-sm" (click)="accessOpen.set(!accessOpen())" data-testid="navbar-accesso-button"
+                  [attr.aria-expanded]="accessOpen()">
+            Accesso <lucide-icon [img]="i.ChevronDown" [size]="15" class="chev" [class.open]="accessOpen()" />
+          </button>
+          @if (accessOpen()) {
+            <div class="dropdown" data-testid="navbar-accesso-dropdown">
+              <a routerLink="/accesso" class="dd-item" data-testid="navbar-login-link">
+                <lucide-icon [img]="i.LogIn" [size]="18" />
+                <span><strong>Login</strong><small>Soci e amministratori</small></span>
+              </a>
+              <a routerLink="/diventa-socio" class="dd-item" data-testid="navbar-registrazione-link">
+                <lucide-icon [img]="i.UserPlus" [size]="18" />
+                <span><strong>Registrazione</strong><small>Diventa nuovo socio</small></span>
+              </a>
+            </div>
+          }
+        </div>
+        <a routerLink="/diventa-socio" class="btn btn-gold btn-sm hide-mobile" data-testid="navbar-diventa-socio-button">Diventa socio</a>
+      }
+      <button class="btn btn-ghost btn-icon hide-desktop" (click)="mobileOpen.set(!mobileOpen())" aria-label="Menu" data-testid="navbar-mobile-toggle">
+        <lucide-icon [img]="mobileOpen() ? i.X : i.Menu" [size]="20" />
+      </button>
+    </div>
+  </div>
+
+  @if (mobileOpen()) {
+    <div class="mobile-panel hide-desktop" data-testid="navbar-mobile-panel">
+      @for (l of links; track l.path) {
+        <a [routerLink]="l.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: l.exact }" class="m-link"
+           [attr.data-testid]="'mobile-' + l.id + '-link'">{{ l.label }}</a>
+      }
+      <div class="m-sep">Accesso</div>
+      @if (auth.user(); as u) {
+        <a [routerLink]="auth.homeFor(u)" class="m-link" data-testid="mobile-area-link">{{ u.role === 'admin' ? 'Gestione sito' : 'Area socio' }}</a>
+        <button class="m-link as-btn" (click)="auth.logout()" data-testid="mobile-logout-button">Esci</button>
+      } @else {
+        <a routerLink="/accesso" class="m-link" data-testid="mobile-login-link">Login</a>
+        <a routerLink="/diventa-socio" class="m-link" data-testid="mobile-registrazione-link">Registrazione nuovo socio</a>
+      }
+    </div>
+  }
+</header>

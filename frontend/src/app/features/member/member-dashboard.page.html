@@ -1,0 +1,102 @@
+<section class="section page-top">
+  <div class="container">
+    @if (data(); as d) {
+      @let m = d.member;
+      <div class="row-between fade-up">
+        <div>
+          <span class="overline">Area socio</span>
+          <h1 class="h2 mt-2" data-testid="member-welcome">Ciao, <span class="gold-text">{{ m.first_name }}</span></h1>
+        </div>
+        <button class="btn btn-ghost btn-sm" (click)="logout()" data-testid="member-logout-button"><lucide-icon [img]="i.LogOut" [size]="16" /> Esci</button>
+      </div>
+
+      <div class="top mt-4">
+        <div class="tessera fade-up delay-1" data-testid="member-card">
+          <div class="t-head">
+            <span class="t-brand">GIGUIYA</span>
+            <span class="mono t-label">Tessera associativa</span>
+          </div>
+          <div class="t-name">{{ m.first_name }} {{ m.last_name }}</div>
+          <div class="t-foot">
+            <div><span class="mono t-label">N° socio</span><span class="mono t-num" data-testid="member-number">{{ m.membership_number }}</span></div>
+            <div><span class="mono t-label">Anno</span><span class="mono t-num">{{ m.current_year }}</span></div>
+            <span class="t-chip"></span>
+          </div>
+        </div>
+
+        <div class="status card fade-up delay-2">
+          <span class="label">Situazione associativa</span>
+          @if (m.in_good_standing) {
+            <div class="big ok" data-testid="member-standing-status"><lucide-icon [img]="i.BadgeCheck" [size]="28" /> In regola</div>
+            <p class="muted">Iscrizione e quota {{ m.current_year }} risultano pagate. Grazie!</p>
+          } @else {
+            <div class="big warn" data-testid="member-standing-status"><lucide-icon [img]="i.Hourglass" [size]="28" /> Non in regola</div>
+            <p class="muted">Risultano pagamenti da regolarizzare. Puoi saldarli direttamente presso l'associazione.</p>
+          }
+          <div class="checks mt-3">
+            <div class="check">
+              <span>Iscrizione <small class="dim">({{ m.enrollment_fee }}€)</small></span>
+              <span class="badge" [class.badge-green]="m.enrollment_paid" [class.badge-red]="!m.enrollment_paid" data-testid="member-enrollment-status">{{ m.enrollment_paid ? 'Pagata' : 'Da pagare' }}</span>
+            </div>
+            <div class="check">
+              <span>Quota {{ m.current_year }} <small class="dim">({{ m.annual_fee }}€)</small></span>
+              <span class="badge" [class.badge-green]="m.current_year_paid" [class.badge-red]="!m.current_year_paid" data-testid="member-fee-status">{{ m.current_year_paid ? 'Pagata' : 'Da pagare' }}</span>
+            </div>
+            <div class="check">
+              <span>Tessera</span>
+              <span class="badge" [class.badge-green]="m.card_issued" data-testid="tessera-status-badge">{{ m.card_issued ? 'Rilasciata' : 'In preparazione' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt-4">
+        <div class="card">
+          <span class="overline">Storico quote</span>
+          @if (m.fees.length) {
+            <ul class="list mt-3" data-testid="member-fees-list">
+              @for (f of m.fees; track f.year) {
+                <li><span class="mono">{{ f.year }}</span><span>{{ f.amount }}€</span><span class="dim">pagata il {{ f.paid_at | itDate: 'date' }}</span></li>
+              }
+            </ul>
+          } @else {
+            <p class="muted mt-3">Nessuna quota annuale registrata.</p>
+          }
+          <hr class="divider mt-4" />
+          <span class="overline mt-4" style="display: flex">I miei dati</span>
+          <dl class="dl mt-3">
+            <dt>Email</dt><dd>{{ m.email }}</dd>
+            <dt>Telefono</dt><dd>{{ m.phone || '—' }}</dd>
+            <dt>Iscritto dal</dt><dd>{{ m.created_at | itDate: 'date' }}</dd>
+          </dl>
+        </div>
+
+        <div class="card">
+          <span class="overline">Le mie prenotazioni</span>
+          @if (d.bookings.length) {
+            <ul class="list mt-3" data-testid="member-bookings-list">
+              @for (b of d.bookings; track b.id) {
+                <li><a [routerLink]="['/eventi', b.event_slug]" class="link-gold">{{ b.event_title }}</a><span class="dim">{{ b.event_start | itDate: 'datetime' }}</span></li>
+              }
+            </ul>
+          } @else {
+            <p class="muted mt-3">Non hai ancora prenotato eventi.</p>
+          }
+          <a routerLink="/eventi" class="btn btn-ghost btn-sm mt-3" data-testid="member-events-link">Scopri gli eventi</a>
+
+          <hr class="divider mt-4" />
+          <span class="overline mt-4" style="display: flex">Cambia password</span>
+          <form [formGroup]="pwdForm" (ngSubmit)="changePassword()" class="form mt-3">
+            <input class="input" type="password" formControlName="current" placeholder="Password attuale" autocomplete="current-password" data-testid="member-current-password-input" />
+            <input class="input" type="password" formControlName="next" placeholder="Nuova password (min. 8 caratteri)" autocomplete="new-password" data-testid="member-new-password-input" />
+            <button class="btn btn-gold btn-sm" type="submit" [disabled]="pwdForm.invalid || pwdLoading()" data-testid="member-change-password-button">Aggiorna password</button>
+          </form>
+        </div>
+      </div>
+    } @else if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    } @else {
+      <div class="skeleton" style="height: 360px"></div>
+    }
+  </div>
+</section>

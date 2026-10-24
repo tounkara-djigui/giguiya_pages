@@ -1,0 +1,168 @@
+<section class="hero" data-testid="home-hero">
+  <div class="hero-bg">
+    <img src="/images/hero.jpg" alt="Comunità in festa" />
+  </div>
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <span class="overline fade-up">Associazione Giguiya · Torino</span>
+      <h1 class="display mt-3 fade-up delay-1">Radici maliane,<br /><span class="gold-text">futuro condiviso.</span></h1>
+      <p class="lead mt-3 fade-up delay-2">
+        Cultura, sport e inclusione: costruiamo ponti tra la comunità maliana e la città di Torino,
+        con eventi, laboratori e progetti aperti a tutti.
+      </p>
+      <div class="row mt-4 fade-up delay-3">
+        <a routerLink="/eventi" class="btn btn-gold" data-testid="hero-eventi-button">Scopri gli eventi <lucide-icon [img]="i.ArrowRight" [size]="17" /></a>
+        <a routerLink="/diventa-socio" class="btn btn-ghost" data-testid="hero-diventa-socio-button">Diventa socio</a>
+      </div>
+    </div>
+
+    @if (events()?.[0]; as next) {
+      <a [routerLink]="['/eventi', next.slug]" class="next glass fade-up delay-4" data-testid="hero-next-event-card">
+        <span class="overline">Prossimo evento</span>
+        <h3 class="h3 mt-2">{{ next.title }}</h3>
+        <div class="stack mt-2" style="gap: 6px">
+          <span class="info-row"><lucide-icon [img]="i.Calendar" [size]="16" /> {{ next.start_at | itDate: 'full' }}</span>
+          <span class="info-row"><lucide-icon [img]="i.MapPin" [size]="16" /> {{ next.location }}</span>
+        </div>
+        <span class="link-gold mt-3">Prenota il tuo posto <lucide-icon [img]="i.ArrowUpRight" [size]="16" /></span>
+      </a>
+    }
+  </div>
+  <div class="scroll-hint"><span></span></div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    @for (n of [0, 1]; track n) {
+      @for (w of marquee; track w) {
+        <span>{{ w }}</span><i>✦</i>
+      }
+    }
+  </div>
+</div>
+
+<section class="section">
+  <div class="container split">
+    <div appReveal>
+      <span class="overline">Chi siamo</span>
+      <h2 class="h2 mt-2">Un'associazione nata per <span class="gold-text">unire, accogliere e valorizzare.</span></h2>
+      <p class="lead mt-3">
+        Giguiya è l'associazione della comunità maliana a Torino. Promuoviamo la cultura del Mali, lo sport
+        e la partecipazione attiva, collaborando con istituzioni e organizzazioni del territorio.
+      </p>
+      <div class="pillars mt-4">
+        @for (p of pillars; track p.title; let idx = $index) {
+          <div class="pillar" appReveal [revealDelay]="idx * 120">
+            <lucide-icon [img]="p.icon" [size]="22" />
+            <div>
+              <h4>{{ p.title }}</h4>
+              <p class="muted">{{ p.text }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      <a routerLink="/chi-siamo" class="link-gold mt-4" data-testid="home-chi-siamo-link">La nostra storia <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+    </div>
+    <div class="about-visual" appReveal [revealDelay]="150">
+      <div class="img-frame tall"><img src="/images/community.jpg" alt="Comunità Giguiya" loading="lazy" /></div>
+      <div class="quote glass">
+        <lucide-icon [img]="i.Quote" [size]="22" />
+        <p>Una comunità forte è fatta di mani che si intrecciano.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section projects-sec">
+  <div class="container">
+    <div class="row-between" appReveal>
+      <div>
+        <span class="overline">I nostri progetti</span>
+        <h2 class="h2 mt-2">Progetti che <span class="gold-text">cambiano le cose.</span></h2>
+      </div>
+      <a routerLink="/progetti" class="btn btn-ghost" data-testid="home-progetti-button">Tutti i progetti <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+    </div>
+    <div class="bento mt-4">
+      @for (p of projects(); track p.id; let idx = $index) {
+        <a [routerLink]="['/progetti', p.slug]" class="tile" [class.big]="idx === 0" appReveal [revealDelay]="idx * 120"
+           [attr.data-testid]="'home-project-' + p.slug">
+          <img [src]="p.image_url || '/images/community.jpg'" [alt]="p.title" loading="lazy" />
+          <div class="tile-body">
+            <span class="badge">{{ p.category }}</span>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.subtitle }}</p>
+          </div>
+          <span class="tile-arrow"><lucide-icon [img]="i.ArrowUpRight" [size]="20" /></span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row-between" appReveal>
+      <div>
+        <span class="overline">Agenda</span>
+        <h2 class="h2 mt-2">Prossimi <span class="gold-text">eventi</span></h2>
+      </div>
+      <a routerLink="/eventi" class="btn btn-ghost" data-testid="home-all-events-button">Calendario completo <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+    </div>
+    @if (events() === undefined) {
+      <div class="grid grid-3 mt-4">
+        @for (n of [1, 2, 3]; track n) { <div class="skeleton" style="height: 420px"></div> }
+      </div>
+    } @else if (events()?.length) {
+      <div class="grid grid-3 mt-4">
+        @for (e of events(); track e.id; let idx = $index) {
+          <div appReveal [revealDelay]="idx * 120"><app-event-card [event]="e" /></div>
+        }
+      </div>
+    } @else {
+      <div class="empty mt-4">Nuovi eventi in arrivo. Torna a trovarci presto!</div>
+    }
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="membership card" appReveal>
+      <div class="halo"></div>
+      <div class="mem-copy">
+        <span class="overline">Tesseramento</span>
+        <h2 class="h2 mt-2">Diventa parte di <span class="gold-text">Giguiya.</span></h2>
+        <p class="lead mt-3">Sostieni le attività dell'associazione, partecipa alla vita sociale e ricevi la tua tessera associativa.</p>
+        <a routerLink="/diventa-socio" class="btn btn-gold mt-4" data-testid="home-membership-button">Richiedi l'iscrizione <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+      </div>
+      <div class="prices">
+        <div class="price">
+          <span class="label">Iscrizione</span>
+          <span class="stat-number">{{ site.enrollmentFee }}€</span>
+          <span class="dim">una tantum</span>
+        </div>
+        <div class="price">
+          <span class="label">Quota associativa</span>
+          <span class="stat-number">{{ site.annualFee }}€</span>
+          <span class="dim">all'anno</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section five" data-testid="home-5x1000-section">
+  <div class="container split even">
+    <div appReveal>
+      <span class="overline">5x1000</span>
+      <h2 class="h2 mt-2">Una firma che <span class="gold-text">non costa nulla</span>, ma vale tantissimo.</h2>
+    </div>
+    <div appReveal [revealDelay]="150">
+      <p class="lead">Nella tua dichiarazione dei redditi puoi destinare il 5x1000 all'Associazione Giguiya. Basta la tua firma e il nostro codice fiscale.</p>
+      <div class="cf mt-3">
+        <span class="label">Codice fiscale</span>
+        <span class="mono cf-code">{{ site.fiscalCode }}</span>
+      </div>
+      <a routerLink="/5x1000" class="link-gold mt-3" data-testid="home-5x1000-link">Come donare <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+    </div>
+  </div>
+</section>

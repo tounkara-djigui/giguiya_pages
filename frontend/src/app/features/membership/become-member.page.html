@@ -1,0 +1,95 @@
+<app-page-header overline="Tesseramento" title="Diventa" accent="socio Giguiya"
+  lead="Unisciti alla nostra associazione: partecipa alla vita della comunità, sostieni i progetti e ricevi la tessera associativa." />
+
+<section class="section-tight">
+  <div class="container split reverse">
+    <div class="stack" style="gap: 28px">
+      <div class="fees">
+        <div class="card fee">
+          <span class="label">Iscrizione</span>
+          <p class="stat-number mt-2" data-testid="membership-enrollment-fee">{{ site.enrollmentFee }}€</p>
+          <p class="dim mt-1">una tantum</p>
+        </div>
+        <div class="card fee">
+          <span class="label">Quota annuale</span>
+          <p class="stat-number mt-2" data-testid="membership-annual-fee">{{ site.annualFee }}€</p>
+          <p class="dim mt-1">ogni anno</p>
+        </div>
+      </div>
+      <div class="card">
+        <span class="overline">Come funziona</span>
+        <ol class="steps mt-3">
+          <li><span class="n">01</span><p><strong>Compila la domanda</strong>Inserisci i tuoi dati nel modulo.</p></li>
+          <li><span class="n">02</span><p><strong>Ricevi l'email di conferma</strong>Con il link per creare la tua password di accesso al sito.</p></li>
+          <li><span class="n">03</span><p><strong>Ti contattiamo</strong>Nei giorni successivi la segreteria ti contatterà per il rilascio della tessera.</p></li>
+          <li><span class="n">04</span><p><strong>Controlla la tua situazione</strong>Dall'area socio vedi tessera e stato dei pagamenti.</p></li>
+        </ol>
+      </div>
+      <p class="dim">Hai già fatto domanda? <a routerLink="/accesso" class="link-gold" data-testid="membership-login-link">Accedi all'area socio</a></p>
+    </div>
+
+    <div class="card form-card" data-testid="membership-form-card">
+      <div class="halo"></div>
+      <div class="rel">
+        @if (done(); as d) {
+          <div class="center fade-up" data-testid="membership-success">
+            <div class="ok"><lucide-icon [img]="i.CircleCheck" [size]="36" /></div>
+            <h2 class="h2 mt-3">Domanda ricevuta!</h2>
+            @if (d.emailSent) {
+              <p class="muted mt-3">Ti abbiamo inviato un'email a <strong class="gold">{{ d.email }}</strong> con la conferma di iscrizione e il link per creare la tua password.</p>
+            } @else {
+              <p class="muted mt-3">La domanda è registrata, ma non siamo riusciti a inviare l'email. La segreteria ti contatterà a breve.</p>
+            }
+            <p class="muted mt-2">Nei prossimi giorni potrai essere contattato per il rilascio della tessera associativa.</p>
+            <a routerLink="/" class="btn btn-ghost mt-4">Torna alla home</a>
+          </div>
+        } @else {
+          <span class="overline">Domanda di iscrizione</span>
+          <h2 class="h3 mt-2">I tuoi dati</h2>
+          <form [formGroup]="form" (ngSubmit)="submit()" class="form mt-3" novalidate>
+            <div class="form-row">
+              <label class="field"><span class="label">Nome <span class="req">*</span></span>
+                <input class="input" formControlName="first_name" [class.invalid]="bad('first_name')" autocomplete="given-name" data-testid="socio-registration-first-name-input" />
+                @if (bad('first_name')) { <span class="field-error">Obbligatorio</span> }</label>
+              <label class="field"><span class="label">Cognome <span class="req">*</span></span>
+                <input class="input" formControlName="last_name" [class.invalid]="bad('last_name')" autocomplete="family-name" data-testid="socio-registration-last-name-input" />
+                @if (bad('last_name')) { <span class="field-error">Obbligatorio</span> }</label>
+            </div>
+            <div class="form-row">
+              <label class="field"><span class="label">Email <span class="req">*</span></span>
+                <input class="input" type="email" formControlName="email" [class.invalid]="bad('email')" autocomplete="email" data-testid="socio-registration-email-input" />
+                @if (bad('email')) { <span class="field-error">Email non valida</span> }</label>
+              <label class="field"><span class="label">Telefono <span class="opt">(opzionale)</span></span>
+                <input class="input" type="tel" formControlName="phone" autocomplete="tel" data-testid="socio-registration-phone-input" /></label>
+            </div>
+            <div class="sep">Dati anagrafici (opzionali)</div>
+            <div class="form-row">
+              <label class="field"><span class="label">Data di nascita</span>
+                <input class="input" type="date" formControlName="birth_date" data-testid="socio-registration-birth-date-input" /></label>
+              <label class="field"><span class="label">Luogo di nascita</span>
+                <input class="input" formControlName="birth_place" data-testid="socio-registration-birth-place-input" /></label>
+            </div>
+            <label class="field"><span class="label">Codice fiscale</span>
+              <input class="input mono" formControlName="fiscal_code" style="text-transform: uppercase" data-testid="socio-registration-fiscal-code-input" /></label>
+            <div class="form-row">
+              <label class="field"><span class="label">Indirizzo</span>
+                <input class="input" formControlName="address" autocomplete="street-address" data-testid="socio-registration-address-input" /></label>
+              <label class="field"><span class="label">Città</span>
+                <input class="input" formControlName="city" autocomplete="address-level2" data-testid="socio-registration-city-input" /></label>
+            </div>
+            <label class="checkbox">
+              <input type="checkbox" formControlName="privacy_accepted" data-testid="socio-registration-privacy-checkbox" />
+              <span>Dichiaro di aver letto lo statuto dell'associazione e acconsento al trattamento dei miei dati personali per la gestione del rapporto associativo. <span class="req" style="color: var(--gold)">*</span></span>
+            </label>
+            @if (bad('privacy_accepted')) { <span class="field-error">È necessario accettare per proseguire</span> }
+            @if (error()) { <div class="alert alert-error" data-testid="socio-registration-error">{{ error() }}</div> }
+            <button class="btn btn-gold btn-block" type="submit" [disabled]="loading()" data-testid="socio-registration-submit-button">
+              @if (loading()) { <span class="spinner"></span> } @else { <lucide-icon [img]="i.UserPlus" [size]="16" /> } Invia domanda di iscrizione
+            </button>
+            <p class="dim" style="font-size: .8rem">Il pagamento di iscrizione ({{ site.enrollmentFee }}€) e quota annuale ({{ site.annualFee }}€) avviene direttamente presso l'associazione.</p>
+          </form>
+        }
+      </div>
+    </div>
+  </div>
+</section>
