@@ -13,7 +13,7 @@ import { Icons } from '../../shared/icons';
   selector: 'app-projects-list-page',
   imports: [RouterLink, LucideAngularModule, PageHeaderComponent, RevealDirective],
   template: `
-    <app-page-header overline="I nostri progetti" title="Idee che diventano" accent="impatto"
+    <app-page-header overline="I nostri progetti" title="Idee che diventano" accent="impatto" image="/images/mali-dogon.jpg"
       lead="Sport, cultura e inclusione: i progetti con cui Giguiya costruisce ogni giorno una comunità più forte e aperta.">
       @if (auth.isAdmin()) {
         <a routerLink="/admin/progetti" class="btn btn-gold btn-sm" data-testid="projects-admin-new-button"><lucide-icon [img]="i.Plus" [size]="16" /> Registra nuovo progetto</a>

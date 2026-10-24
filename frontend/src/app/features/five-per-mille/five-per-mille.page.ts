@@ -10,8 +10,8 @@ import { Icons } from '../../shared/icons';
   selector: 'app-five-per-mille-page',
   imports: [RouterLink, LucideAngularModule, PageHeaderComponent, RevealDirective],
   template: `
-    <app-page-header overline="Sostienici" title="Il tuo 5x1000 a" accent="Giguiya"
-      lead="Destinare il 5x1000 non ti costa nulla: è una quota delle imposte che lo Stato riserva agli enti del terzo settore. Con la tua firma sostieni sport, cultura e inclusione a Torino." />
+    <app-page-header overline="Sostienici" title="Il tuo 5x1000 a" accent="Giguiya" image="/images/mali-timbuktu.jpg"
+      lead="Destinare il 5x1000 non ti costa nulla: è una quota delle imposte che lo Stato riserva agli enti del terzo settore. Con la tua firma sostieni integrazione, solidarietà e progetti di cooperazione tra Italia e Mali." />
 
     <section class="section-tight">
       <div class="container split">
@@ -72,9 +72,9 @@ export default class FivePerMillePage {
     { title: 'Inserisci il codice fiscale', text: 'Scrivi il codice fiscale dell\u2019Associazione Giguiya sotto la tua firma.' },
   ];
   protected readonly where = [
-    { icon: Icons.Trophy, title: 'Sport', text: 'La squadra maschile nel campionato italiano, allenamenti e trasferte.' },
-    { icon: Icons.Sparkles, title: 'Cultura', text: 'Laboratori di treccine e cucina maliana, gite ed eventi musicali.' },
-    { icon: Icons.Ear, title: 'Inclusione', text: 'Ascolto e accompagnamento nei percorsi di inclusione e cittadinanza.' },
+    { icon: Icons.HeartHandshake, title: 'Integrazione', text: 'Accoglienza, ascolto e accompagnamento dei nuovi arrivati, insieme ai maliani che vivono da tempo in Italia.' },
+    { icon: Icons.Globe, title: 'Cooperazione in Mali', text: 'Progetti di cooperazione tra Italia e Mali per creare opportunità di lavoro per i giovani.' },
+    { icon: Icons.Users, title: 'Giovani e fragili', text: 'Attenzione a bambini, adolescenti, giovani e anziani, con sport, cultura e servizi sociali.' },
   ];
 
   copy(): void {

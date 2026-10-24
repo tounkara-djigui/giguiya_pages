@@ -29,10 +29,15 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Testing iteration_1: backend 18/18, frontend all flows pass. Minor fixes applied after: email 429 retry + guardrail ValueError caught, membership number collision retry, pending admin re-register no longer overwrites password, dynamic page titles, solid mobile menu.
 
 ## Placeholders to fill
-- Codice fiscale associazione [CODICE FISCALE] (5x1000, footer) – src/app/core/config.ts
 - Categoria campionato squadra maschile [CATEGORIA DA DEFINIRE] – editable from admin Progetti
-- Statuto [STATUTO DA FORNIRE] – Chi siamo page
 - 3 sample events (date/luogo da definire) – editable from admin Eventi
+- Foto reali degli eventi dell'associazione (da fornire dal cliente)
+
+## Update 2026-10-24 (statuto + immagini Mali)
+- Statuto PDF pubblicato in /docs/statuto-aspcmt-giguiya.pdf (frontend/public/docs); C.F. 97886490016; APS; approvato 23/07/2023.
+- Contenuti riscritti dallo statuto: Chi siamo (finalità Art.2, attività Art.3, organi, ammissione soci), Home, Diventa socio (Consiglio direttivo, quota entro 31/12), 5x1000, email di benvenuto. Testi centralizzati in src/app/core/content/association.content.ts.
+- Immagini reali del Mali (Wikimedia Commons, crediti nel footer): Djenné, Paese Dogon, Timbuctù, Mopti/Niger, Bandiagara come sfondi hero/page header + sezione "Scopri il Mali".
+- PostgreSQL data moved to /app/.pgdata via /app/scripts/start-postgres.sh (supervisor program postgres) so it survives container restarts.
 
 ## Backlog
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.

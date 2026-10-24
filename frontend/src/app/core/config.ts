@@ -11,7 +11,7 @@ export const SITE = {
   phone: '320 155 0017',
   phoneHref: '+393201550017',
   address: 'Corso Casale 97, Torino',
-  fiscalCode: '[CODICE FISCALE]',
+  fiscalCode: '97886490016',
   enrollmentFee: 5,
   annualFee: 60,
   adminDomain: 'giguiya.it',

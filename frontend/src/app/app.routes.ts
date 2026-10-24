@@ -7,7 +7,7 @@ export const routes: Routes = [
   { path: 'eventi/:slug', loadComponent: () => import('./features/events/event-detail.page'), title: 'Evento · Giguiya' },
   { path: 'progetti', loadComponent: () => import('./features/projects/projects-list.page'), title: 'Progetti · Giguiya' },
   { path: 'progetti/:slug', loadComponent: () => import('./features/projects/project-detail.page'), title: 'Progetto · Giguiya' },
-  { path: 'chi-siamo', loadComponent: () => import('./features/about/about.page'), title: 'Chi siamo · Giguiya' },
+  { path: 'chi-siamo', loadComponent: () => import('./features/about/chi-siamo.page'), title: 'Chi siamo · Giguiya' },
   { path: '5x1000', loadComponent: () => import('./features/five-per-mille/five-per-mille.page'), title: '5x1000 · Giguiya' },
   { path: 'diventa-socio', loadComponent: () => import('./features/membership/become-member.page'), title: 'Diventa socio · Giguiya' },
   {

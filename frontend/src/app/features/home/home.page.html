@@ -1,14 +1,15 @@
 <section class="hero" data-testid="home-hero">
   <div class="hero-bg">
-    <img src="/images/hero.jpg" alt="Comunità in festa" />
+    <img src="/images/mali-djenne.jpg" alt="La Grande Moschea di Djenné, Mali" />
   </div>
   <div class="container hero-inner">
     <div class="hero-copy">
-      <span class="overline fade-up">Associazione Giguiya · Torino</span>
+      <span class="overline fade-up">ASPCMT – Giguiya · APS · Torino</span>
       <h1 class="display mt-3 fade-up delay-1">Radici maliane,<br /><span class="gold-text">futuro condiviso.</span></h1>
       <p class="lead mt-3 fade-up delay-2">
-        Cultura, sport e inclusione: costruiamo ponti tra la comunità maliana e la città di Torino,
-        con eventi, laboratori e progetti aperti a tutti.
+        Associazione per la Solidarietà e la Promozione della Cultura del Mali di Torino.
+        Promuoviamo integrazione, solidarietà e cooperazione tra Italia e Mali, con un'attenzione speciale
+        a bambini, giovani e anziani.
       </p>
       <div class="row mt-4 fade-up delay-3">
         <a routerLink="/eventi" class="btn btn-gold" data-testid="hero-eventi-button">Scopri gli eventi <lucide-icon [img]="i.ArrowRight" [size]="17" /></a>
@@ -45,10 +46,11 @@
   <div class="container split">
     <div appReveal>
       <span class="overline">Chi siamo</span>
-      <h2 class="h2 mt-2">Un'associazione nata per <span class="gold-text">unire, accogliere e valorizzare.</span></h2>
+      <h2 class="h2 mt-2">Non solo feste: <span class="gold-text">solidarietà, integrazione e cooperazione.</span></h2>
       <p class="lead mt-3">
-        Giguiya è l'associazione della comunità maliana a Torino. Promuoviamo la cultura del Mali, lo sport
-        e la partecipazione attiva, collaborando con istituzioni e organizzazioni del territorio.
+        L'ASPCMT – Giguiya è un'Associazione di Promozione Sociale senza scopo di lucro. Operiamo grazie al volontariato
+        dei soci e in collaborazione con l'Ambasciata del Mali in Italia, le istituzioni e gli enti locali, per migliorare
+        la qualità della vita della comunità maliana e di tutta la città.
       </p>
       <div class="pillars mt-4">
         @for (p of pillars; track p.title; let idx = $index) {
@@ -61,15 +63,35 @@
           </div>
         }
       </div>
-      <a routerLink="/chi-siamo" class="link-gold mt-4" data-testid="home-chi-siamo-link">La nostra storia <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+      <a routerLink="/chi-siamo" class="link-gold mt-4" data-testid="home-chi-siamo-link">Le nostre finalità e lo statuto <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
     </div>
     <div class="about-visual" appReveal [revealDelay]="150">
-      <div class="img-frame tall"><img src="/images/community.jpg" alt="Comunità Giguiya" loading="lazy" /></div>
+      <div class="img-frame tall"><img src="/images/mali-dogon.jpg" alt="Villaggio Dogon, Mali" loading="lazy" /></div>
       <div class="quote glass">
         <lucide-icon [img]="i.Quote" [size]="22" />
         <p>Una comunità forte è fatta di mani che si intrecciano.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section mali-sec" data-testid="home-mali-section">
+  <div class="container">
+    <div class="row-between" appReveal>
+      <div>
+        <span class="overline">La nostra terra</span>
+        <h2 class="h2 mt-2">Scopri il <span class="gold-text">Mali</span></h2>
+      </div>
+      <p class="muted mali-lead">Un paese di storia millenaria, città di fango patrimonio UNESCO e paesaggi straordinari: la cultura che vogliamo far conoscere a Torino.</p>
+    </div>
+  </div>
+  <div class="mali-strip mt-4">
+    @for (p of places; track p.name; let idx = $index) {
+      <figure class="place" appReveal [revealDelay]="idx * 90" [attr.data-testid]="'home-mali-place-' + idx">
+        <img [src]="p.img" [alt]="p.name + ', Mali'" loading="lazy" />
+        <figcaption><strong>{{ p.name }}</strong><span>{{ p.text }}</span></figcaption>
+      </figure>
+    }
   </div>
 </section>
 

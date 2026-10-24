@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { SITE } from '../../../core/config';
+import { PHOTO_CREDITS } from '../../../core/content/association.content';
 import { Icons } from '../../icons';
 import { LogoComponent } from '../logo/logo.component';
 
@@ -22,7 +23,7 @@ import { LogoComponent } from '../logo/logo.component';
         <div class="cols">
           <div class="stack">
             <app-logo />
-            <p class="muted small">{{ site.fullName }} – {{ site.acronym }}. Cultura, sport e inclusione aperti a tutta la cittadinanza.</p>
+            <p class="muted small">{{ site.fullName }} – {{ site.acronym }}. Associazione di Promozione Sociale: solidarietà, integrazione, cooperazione tra Italia e Mali.</p>
           </div>
           <div class="stack">
             <span class="label">Esplora</span>
@@ -45,7 +46,8 @@ import { LogoComponent } from '../logo/logo.component';
           </div>
         </div>
         <div class="bottom">
-          <span>© {{ year }} {{ site.acronym }} · C.F. {{ site.fiscalCode }}</span>
+          <span>© {{ year }} {{ site.acronym }} APS · C.F. {{ site.fiscalCode }}</span>
+          <a href="https://commons.wikimedia.org" target="_blank" rel="noopener" class="credits" data-testid="footer-photo-credits">{{ credits }}</a>
           <span class="mono">Torino · Mali</span>
         </div>
       </div>
@@ -61,11 +63,14 @@ import { LogoComponent } from '../logo/logo.component';
     .small { font-size: .9rem; max-width: 34ch; }
     .f-link { color: var(--text-2); font-size: .95rem; transition: color .2s ease; width: fit-content; }
     .f-link:hover { color: var(--gold-light); }
+    .credits { color: var(--text-3); }
+    .credits:hover { color: var(--gold-light); }
     .bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: .8rem; color: var(--text-3); border-top: 1px solid rgba(255,255,255,.05); padding-top: 28px; position: relative; }
   `,
 })
 export class FooterComponent {
   protected readonly i = Icons;
   protected readonly site = SITE;
+  protected readonly credits = PHOTO_CREDITS;
   protected readonly year = new Date().getFullYear();
 }

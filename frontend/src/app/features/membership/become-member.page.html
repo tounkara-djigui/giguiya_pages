@@ -1,5 +1,5 @@
-<app-page-header overline="Tesseramento" title="Diventa" accent="socio Giguiya"
-  lead="Unisciti alla nostra associazione: partecipa alla vita della comunità, sostieni i progetti e ricevi la tessera associativa." />
+<app-page-header overline="Tesseramento" title="Diventa" accent="socio Giguiya" image="/images/mali-djenne.jpg"
+  lead="L'associazione è aperta a tutti, senza alcuna discriminazione: chi condivide le nostre finalità di solidarietà, integrazione e promozione della cultura del Mali può diventare socio." />
 
 <section class="section-tight">
   <div class="container split reverse">
@@ -13,17 +13,22 @@
         <div class="card fee">
           <span class="label">Quota annuale</span>
           <p class="stat-number mt-2" data-testid="membership-annual-fee">{{ site.annualFee }}€</p>
-          <p class="dim mt-1">ogni anno</p>
+          <p class="dim mt-1">ogni anno, entro il 31 dicembre</p>
         </div>
       </div>
       <div class="card">
         <span class="overline">Come funziona</span>
         <ol class="steps mt-3">
-          <li><span class="n">01</span><p><strong>Compila la domanda</strong>Inserisci i tuoi dati nel modulo.</p></li>
+          <li><span class="n">01</span><p><strong>Compila la domanda</strong>La domanda scritta viene esaminata dal Consiglio direttivo, come previsto dallo statuto.</p></li>
           <li><span class="n">02</span><p><strong>Ricevi l'email di conferma</strong>Con il link per creare la tua password di accesso al sito.</p></li>
           <li><span class="n">03</span><p><strong>Ti contattiamo</strong>Nei giorni successivi la segreteria ti contatterà per il rilascio della tessera.</p></li>
           <li><span class="n">04</span><p><strong>Controlla la tua situazione</strong>Dall'area socio vedi tessera e stato dei pagamenti.</p></li>
         </ol>
+      </div>
+      <div class="card">
+        <span class="overline">Diritti e doveri</span>
+        <p class="muted mt-3">Tutti i soci hanno gli stessi diritti: partecipare alle attività, votare in assemblea se in regola con la quota, eleggere ed essere eletti negli organi sociali. Si impegnano a rispettare lo statuto e a versare la quota associativa annuale.</p>
+        <a href="/docs/statuto-aspcmt-giguiya.pdf" target="_blank" rel="noopener" class="link-gold mt-3" data-testid="membership-statuto-link">Leggi lo statuto</a>
       </div>
       <p class="dim">Hai già fatto domanda? <a routerLink="/accesso" class="link-gold" data-testid="membership-login-link">Accedi all'area socio</a></p>
     </div>

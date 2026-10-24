@@ -1,0 +1,111 @@
+<app-page-header overline="Chi siamo · APS" title="Solidarietà e cultura del Mali," accent="a Torino."
+  image="/images/mali-bandiagara.jpg"
+  [lead]="site.fullName + ' – ' + site.acronym + '. Un\u2019Associazione di Promozione Sociale senza scopo di lucro, nata per unire la comunità maliana e la città.'" />
+
+<section class="section">
+  <div class="container split reverse">
+    <div class="img-frame tall" appReveal><img src="/images/mali-djenne.jpg" alt="La Grande Moschea di Djenné, Mali" loading="lazy" /></div>
+    <div appReveal [revealDelay]="150">
+      <span class="overline">Chi siamo</span>
+      <h2 class="h2 mt-2">Non solo feste: <span class="gold-text">un impegno civico.</span></h2>
+      <p class="lead mt-3">
+        L'ASPCMT – Giguiya persegue, senza scopo di lucro, finalità civiche, solidaristiche, di utilità sociale,
+        culturali, ricreative ed educative. Operiamo in collaborazione con la rappresentanza del Mali in Italia
+        (Ambasciata), lo Stato italiano, le Regioni, le Province e gli enti locali.
+      </p>
+      <p class="lead mt-2">
+        Lavoriamo soprattutto grazie al volontariato dei nostri soci, a favore dei soci, delle loro famiglie e di tutta
+        la cittadinanza, nel rispetto della libertà e della dignità di ogni persona.
+      </p>
+      <div class="facts mt-4">
+        <div><span class="label">Forma giuridica</span><p>{{ statute.legalForm }}</p></div>
+        <div><span class="label">Sede</span><p>{{ site.address }}</p></div>
+        <div><span class="label">Codice fiscale</span><p class="mono" data-testid="about-fiscal-code">{{ site.fiscalCode }}</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section aims-sec">
+  <div class="container">
+    <div appReveal>
+      <span class="overline">Le nostre finalità · Art. 2 dello statuto</span>
+      <h2 class="h2 mt-2">Perché <span class="gold-text">esistiamo</span></h2>
+    </div>
+    <div class="aims mt-4">
+      @for (a of aims; track a.title; let idx = $index) {
+        <article class="aim card card-hover" appReveal [revealDelay]="idx * 90" [attr.data-testid]="'about-aim-' + idx">
+          <span class="n mono">0{{ idx + 1 }}</span>
+          <h3 class="h3 mt-2">{{ a.title }}</h3>
+          <p class="muted mt-2">{{ a.text }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div appReveal>
+      <span class="overline">Cosa facciamo · Art. 3</span>
+      <h2 class="h2 mt-2">Ambiti di <span class="gold-text">attività</span></h2>
+      <p class="lead mt-3">Per raggiungere le nostre finalità svolgiamo attività di interesse generale previste dal Codice del Terzo Settore (D.Lgs. 117/2017), tra cui:</p>
+      <div class="tags mt-4">
+        @for (a of activities; track a) { <span class="tag">{{ a }}</span> }
+      </div>
+      <a routerLink="/progetti" class="link-gold mt-4" data-testid="about-projects-link">Guarda i nostri progetti <lucide-icon [img]="i.ArrowRight" [size]="16" /></a>
+    </div>
+    <div appReveal [revealDelay]="150">
+      <span class="overline">Come siamo organizzati</span>
+      <div class="organs mt-3">
+        @for (o of organs; track o.title) {
+          <div class="organ"><lucide-icon [img]="i.Landmark" [size]="20" /><div><h4>{{ o.title }}</h4><p class="muted">{{ o.text }}</p></div></div>
+        }
+      </div>
+      <div class="card mt-4">
+        <span class="label">Diventare socio</span>
+        <p class="muted mt-2">L'associazione è aperta a tutti, senza alcuna discriminazione. Si presenta domanda scritta al Consiglio direttivo; i soci versano la quota associativa annuale entro il 31 dicembre e hanno tutti gli stessi diritti e doveri.</p>
+        <a routerLink="/diventa-socio" class="btn btn-gold btn-sm mt-3" data-testid="about-diventa-socio-button">Diventa socio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section partners-sec">
+  <div class="container">
+    <span class="overline">Hanno collaborato con noi</span>
+    <div class="partners mt-4" appReveal>
+      <span>Città di Torino</span><i>✦</i><span>INTERSOS</span><i>✦</i><span>UNHCR</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div appReveal>
+      <span class="overline">Statuto</span>
+      <h2 class="h2 mt-2">Lo statuto <span class="gold-text">dell'associazione</span></h2>
+      <p class="lead mt-3">Approvato dall'assemblea dei soci il {{ statute.approvedOn }} e registrato presso l'Agenzia delle Entrate. Definisce finalità, attività, diritti e doveri dei soci e organi dell'associazione.</p>
+      <div class="statuto card mt-4">
+        <lucide-icon [img]="i.FileText" [size]="28" />
+        <div>
+          <h4>Statuto ASPCMT – Giguiya</h4>
+          <p class="muted">Documento PDF firmato e registrato</p>
+          <div class="row mt-3">
+            <a [href]="statute.pdf" target="_blank" rel="noopener" class="btn btn-gold btn-sm" data-testid="about-statuto-open-button"><lucide-icon [img]="i.ArrowUpRight" [size]="15" /> Leggi lo statuto</a>
+            <a [href]="statute.pdf" download class="btn btn-ghost btn-sm" data-testid="about-statuto-download-button"><lucide-icon [img]="i.Download" [size]="15" /> Scarica PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="card" appReveal [revealDelay]="150">
+      <div class="logo-card"><img src="/images/logo-full.jpg" alt="Logo ASPCMT Giguiya" data-testid="about-full-logo" /></div>
+      <span class="overline mt-4" style="display: flex">Contatti</span>
+      <div class="stack mt-3">
+        <a class="info-row" href="https://maps.google.com/?q=Corso+Casale+97+Torino" target="_blank" rel="noopener" data-testid="about-address"><lucide-icon [img]="i.MapPin" [size]="18" /> {{ site.address }}</a>
+        <a class="info-row" [href]="'mailto:' + site.email" data-testid="about-email"><lucide-icon [img]="i.Mail" [size]="18" /> {{ site.email }}</a>
+        <a class="info-row" [href]="'tel:' + site.phoneHref" data-testid="about-phone"><lucide-icon [img]="i.Phone" [size]="18" /> {{ site.phone }}</a>
+      </div>
+    </aside>
+  </div>
+</section>
