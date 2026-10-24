@@ -4,8 +4,21 @@ import os
 
 import requests
 from fastapi import HTTPException
+from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+
+from app.core.database import db
 
 logger = logging.getLogger(__name__)
+
+USE_EMERGENT = bool(os.environ.get("EMERGENT_LLM_KEY"))
+_grid: AsyncIOMotorGridFSBucket | None = None
+
+
+def _bucket() -> AsyncIOMotorGridFSBucket:
+    global _grid
+    if _grid is None:
+        _grid = AsyncIOMotorGridFSBucket(db, bucket_name="uploads")
+    return _grid
 
 STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
 STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
@@ -34,6 +47,9 @@ def _request(method: str, path: str, **kwargs) -> requests.Response:
 
 
 def init_storage() -> None:
+    if not USE_EMERGENT:
+        logger.info("Object storage: MongoDB GridFS")
+        return
     try:
         _init_storage()
         logger.info("Object storage initialized")
@@ -42,6 +58,9 @@ def init_storage() -> None:
 
 
 async def put_object(path: str, data: bytes, content_type: str) -> dict:
+    if not USE_EMERGENT:
+        await _bucket().upload_from_stream(path, data, metadata={"contentType": content_type})
+        return {"path": path, "size": len(data)}
     try:
         resp = await asyncio.to_thread(_request, "PUT", path, data=data, headers={"Content-Type": content_type})
     except requests.RequestException as e:
@@ -51,6 +70,12 @@ async def put_object(path: str, data: bytes, content_type: str) -> dict:
 
 
 async def get_object(path: str) -> bytes:
+    if not USE_EMERGENT:
+        found = await _bucket().find({"filename": path}, limit=1).to_list(1)
+        if not found:
+            raise HTTPException(status_code=404, detail="File non trovato")
+        stream = await _bucket().open_download_stream(found[0]["_id"])
+        return await stream.read()
     try:
         resp = await asyncio.to_thread(_request, "GET", path)
     except requests.RequestException:

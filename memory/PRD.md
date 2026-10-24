@@ -55,6 +55,14 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Prezzi mostrati come "xx €" ovunque (frontend SITE.enrollmentFee/annualFee = 'xx'; backend ENROLLMENT_FEE_LABEL/ANNUAL_FEE_LABEL = "xx" usati in API soci ed email di benvenuto). Importi numerici ENROLLMENT_FEE/ANNUAL_FEE restano per i record pagamenti.
 - Footer: link "Staff @giguiya.it" → "Area staff"; pagina login: testo "Crea l'account dell'area di gestione". La pagina registrazione-admin mantiene l'indicazione del dominio (serve per la validazione).
 
+## Update 2026-10-24 (configurazione Render)
+- Scelte cliente: frontend su GitHub Pages, backend su Render (free); immagini nel database (GridFS); email via SMTP casella Aruba (Resend SMTP come alternativa).
+- /app/render.yaml (Blueprint, rootDir backend, requirements-render.txt minimale, health /api/health), /app/RENDER.md guida in italiano (Atlas, Render, variabile API_URL su GitHub).
+- storage_service: senza EMERGENT_LLM_KEY usa GridFS bucket "uploads"; email_service: se SMTP_HOST impostato usa SMTP (465 SSL o STARTTLS), altrimenti Emergent. EMERGENT_EMAIL_KEY ora opzionale.
+- server.py: CORS origin derivata da FRONTEND_URL (supporta URL con percorso, es. github.io/giguiya_pages).
+- Verificato in ambiente tipo Render (venv pulito, nessuna chiave Emergent): health, login admin, upload+download immagine GridFS, CORS github.io, errore SMTP gestito. Anteprima Emergent invariata.
+- Pubblicazione Emergent bloccata: crediti insufficienti (17,27 / 50).
+
 ## Backlog
 - P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.

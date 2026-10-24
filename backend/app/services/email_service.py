@@ -2,6 +2,9 @@ import asyncio
 import ipaddress
 import logging
 import re
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 
@@ -103,8 +106,34 @@ def _assert_safe_email(subject: str, html: str) -> None:
         _check_anchor(href, text)
 
 
+def _smtp_send(to: str, subject: str, html: str) -> None:
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = formataddr((settings.EMAIL_FROM_NAME, settings.SMTP_FROM))
+    msg["To"] = to
+    if settings.EMAIL_REPLY_TO:
+        msg["Reply-To"] = settings.EMAIL_REPLY_TO
+    msg.set_content("Apri questa email con un programma che supporta HTML.")
+    msg.add_alternative(html, subtype="html")
+    if settings.SMTP_PORT == 465:
+        server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=30)
+    else:
+        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=30)
+        server.starttls()
+    with server:
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        server.send_message(msg)
+
+
 async def send_email(*, to: str, subject: str, html: str) -> str | None:
     _assert_safe_email(subject, html)
+    if settings.SMTP_HOST:
+        try:
+            await asyncio.to_thread(_smtp_send, to, subject, html)
+        except (smtplib.SMTPException, OSError) as e:
+            logger.error(f"SMTP send failed: {e}")
+            raise HTTPException(status_code=502, detail="Invio email non riuscito")
+        return None
     payload = {"to": [to], "subject": subject, "html": html, "from_name": settings.EMAIL_FROM_NAME}
     if settings.EMAIL_REPLY_TO:
         payload["contact_email"] = settings.EMAIL_REPLY_TO

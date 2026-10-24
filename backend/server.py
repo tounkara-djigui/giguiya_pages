@@ -1,5 +1,6 @@
 import os
 from contextlib import asynccontextmanager
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -11,7 +12,12 @@ from app.routers import admin, auth, events, files, members, projects
 from app.seed import seed
 from app.services.storage_service import init_storage
 
-ALLOWED_ORIGINS = [o for o in {settings.FRONTEND_URL, os.environ.get("APP_URL", "").rstrip("/"), "http://localhost:3000"} if o]
+def _origin(url: str) -> str:
+    p = urlparse(url)
+    return f"{p.scheme}://{p.netloc}" if p.netloc else ""
+
+
+ALLOWED_ORIGINS = [o for o in {_origin(settings.FRONTEND_URL), _origin(os.environ.get("APP_URL", "")), "http://localhost:3000"} if o]
 
 
 @asynccontextmanager
