@@ -16,4 +16,3 @@ fs.writeFileSync(
   path.join(outDir, 'environment.ts'),
   `export const environment = { apiUrl: '${apiUrl}' };\n`
 );
-console.log(`[set-env] apiUrl=${apiUrl}`);

@@ -34,9 +34,10 @@ def decode_token(token: str, kind: str) -> dict:
         raise HTTPException(status_code=401, detail="Sessione scaduta")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token non valido")
-    if payload.get("type") != kind:
-        raise HTTPException(status_code=401, detail="Token non valido")
-    return payload
+    else:
+        if payload.get("type") != kind:
+            raise HTTPException(status_code=401, detail="Token non valido")
+        return payload
 
 
 def _cookie(response: Response, key: str, value: str, max_age: int) -> None:

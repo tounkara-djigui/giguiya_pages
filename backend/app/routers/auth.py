@@ -38,24 +38,37 @@ async def _register_failure(db: AsyncSession, attempt: LoginAttempt | None, iden
     await db.commit()
 
 
+def _ensure_not_locked(attempt: LoginAttempt | None) -> None:
+    if attempt and attempt.locked_until and attempt.locked_until > utcnow():
+        raise HTTPException(status_code=429, detail="Troppi tentativi. Riprova tra 15 minuti.")
+
+
+async def _authenticate(db: AsyncSession, email: str, password: str, attempt: LoginAttempt | None, identifier: str) -> User:
+    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+    if user and verify_password(password, user.password_hash):
+        return user
+    await _register_failure(db, attempt, identifier)
+    if user and not user.password_hash:
+        raise HTTPException(status_code=401, detail="Password non ancora impostata: usa il link ricevuto via email")
+    raise HTTPException(status_code=401, detail="Email o password non corretti")
+
+
+async def _clear_attempts(db: AsyncSession, attempt: LoginAttempt | None) -> None:
+    if attempt:
+        await db.delete(attempt)
+        await db.commit()
+
+
 @router.post("/login", response_model=UserOut)
 async def login(data: LoginIn, request: Request, response: Response, db: AsyncSession = Depends(get_db)):
     email = data.email.lower()
     identifier = f"{_client_ip(request)}:{email}"
     attempt = await db.get(LoginAttempt, identifier)
-    if attempt and attempt.locked_until and attempt.locked_until > utcnow():
-        raise HTTPException(status_code=429, detail="Troppi tentativi. Riprova tra 15 minuti.")
-    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
-    if not user or not verify_password(data.password, user.password_hash):
-        await _register_failure(db, attempt, identifier)
-        if user and not user.password_hash:
-            raise HTTPException(status_code=401, detail="Password non ancora impostata: usa il link ricevuto via email")
-        raise HTTPException(status_code=401, detail="Email o password non corretti")
+    _ensure_not_locked(attempt)
+    user = await _authenticate(db, email, data.password, attempt, identifier)
     if user.role == "admin" and not user.email_verified:
         raise HTTPException(status_code=403, detail="Conferma prima il tuo indirizzo email tramite il link ricevuto")
-    if attempt:
-        await db.delete(attempt)
-        await db.commit()
+    await _clear_attempts(db, attempt)
     set_auth_cookies(response, user.id)
     return user
 
