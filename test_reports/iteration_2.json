@@ -1,0 +1,18 @@
+{
+  "summary": "Regression check after the code-quality refactors (login split, decode_token, _assert_safe_email, frontend toast/interceptor constants). Ran test_giguiya_api.py serially: 27/27 passed. Added test_refactor_regression.py (9 tests): all passed. It covers the exact 401 messages, member without a password ('Password non ancora impostata'), invalid, expired and wrong-type tokens on /auth/me, the refresh flow, and email_sent=true on booking and member registration. Frontend smoke test passed: home renders, booking shows booking-success and the toast-message 'Prenotazione confermata!', admin login goes to /admin. To test the 401->refresh path, the access_token cookie was deleted and the user then clicked through to /admin/soci. Network log: 401 GET admin/members -> 200 POST auth/refresh -> 200 retry. There are no JS console errors; the only console messages are browser 'Failed to load resource 401' entries from anonymous /auth/me bootstrap calls and from the planned 401.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_giguiya_api.py", "/app/backend/tests/test_refactor_regression.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Optional: anonymous page loads call /auth/me, which logs a 401 network message in the browser console each time. A 200 response with null for anonymous users, or a hint cookie, would remove this noise.",
+    "Login with a non-existent email and a wrong password both count toward the per-IP+email lockout. This is intended, and the 429 works."
+  ],
+  "updated_files": ["/app/backend/tests/test_refactor_regression.py"],
+  "success_rate": {"backend": "100% (36/36)", "frontend": "100%"},
+  "test_credentials": "admin@giguiya.it / Giguiya@Admin2026 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None persisted. TEST_/test_ bookings, users and login_attempts were deleted; seeded events (3) and projects (3) are intact.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run both files serially from /app/backend/tests: pytest -n 0 test_giguiya_api.py test_refactor_regression.py. The regression file imports helpers from test_giguiya_api and reads JWT_SECRET from backend/.env to forge expired tokens. To test the 401->refresh path in the UI, clear only the access_token cookie after login and navigate inside the SPA without reloading."
+}
