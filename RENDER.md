@@ -1,6 +1,6 @@
 # Giguiya su Render + GitHub Pages
 
-Sito (parte grafica): GitHub Pages — `https://tounkara-djigui.github.io/giguiya_pages`
+Sito (parte grafica): GitHub Pages con dominio `https://giguiya.it` (DNS Aruba: 4 record A verso GitHub + CNAME `www` → `tounkara-djigui.github.io`; MX invariato)
 Server (backend): Render, piano gratuito — configurato in `render.yaml`
 Database e immagini: MongoDB Atlas, piano gratuito (le immagini caricate dallo staff sono salvate nel database)
 Email: casella Aruba di giguiya.it via SMTP (oppure Resend, vedi sotto)

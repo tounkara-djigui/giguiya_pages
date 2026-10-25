@@ -63,6 +63,11 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Verificato in ambiente tipo Render (venv pulito, nessuna chiave Emergent): health, login admin, upload+download immagine GridFS, CORS github.io, errore SMTP gestito. Anteprima Emergent invariata.
 - Pubblicazione Emergent bloccata: crediti insufficienti (17,27 / 50).
 
+## Update 2026-10-24 (dominio giguiya.it)
+- Render live: https://giguiya-api-wpje.onrender.com (Atlas collegato). Workflow Pages usa questo URL come default.
+- Preparato passaggio a dominio: workflow base-href "/", render.yaml FRONTEND_URL=https://giguiya.it. DNS Aruba attuale: A 31.11.35.15 (apex e www), MX mx.giguiya.it (A propri 62.149.128.x, non toccare).
+- Passi utente: DNS Aruba (4 A GitHub + CNAME www), Pages custom domain + Enforce HTTPS, poi Save to GitHub, poi FRONTEND_URL su Render.
+
 ## Backlog
 - P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.

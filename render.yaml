@@ -18,7 +18,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://tounkara-djigui.github.io/giguiya_pages
+        value: https://giguiya.it
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
