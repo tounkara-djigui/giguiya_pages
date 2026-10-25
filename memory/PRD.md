@@ -67,6 +67,7 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Render live: https://giguiya-api-wpje.onrender.com (Atlas collegato). Workflow Pages usa questo URL come default.
 - Preparato passaggio a dominio: workflow base-href "/", render.yaml FRONTEND_URL=https://giguiya.it. DNS Aruba attuale: A 31.11.35.15 (apex e www), MX mx.giguiya.it (A propri 62.149.128.x, non toccare).
 - Passi utente: DNS Aruba (4 A GitHub + CNAME www), Pages custom domain + Enforce HTTPS, poi Save to GitHub, poi FRONTEND_URL su Render.
+- 2026-10-25 verificato: https://giguiya.it live (HTTPS attivo, base "/", apiUrl onrender), github.io → 301 giguiya.it, www → 301 giguiya.it (CNAME ok su Cloudflare DNS, Google ancora in cache), CORS Render accetta https://giguiya.it, /eventi servito via 404.html SPA.
 
 ## Backlog
 - P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
