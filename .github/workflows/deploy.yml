@@ -32,7 +32,7 @@ jobs:
 
       - name: Compila il sito Angular
         env:
-          REACT_APP_BACKEND_URL: ${{ vars.API_URL }}
+          REACT_APP_BACKEND_URL: ${{ vars.API_URL || secrets.API_URL || 'https://giguiya-api-wpje.onrender.com' }}
         run: |
           node scripts/set-env.js
           npx ng build --configuration production --base-href "/${{ github.event.repository.name }}/"

@@ -28,9 +28,8 @@ Email con Resend invece di Aruba: in Render impostate `SMTP_HOST=smtp.resend.com
 `SMTP_USER=resend`, `SMTP_PASSWORD=<chiave API Resend>`, `SMTP_FROM=<indirizzo @giguiya.it verificato su Resend>`.
 
 ## 3. Collegare il sito su GitHub Pages al server
-1. Repository GitHub → Settings → Secrets and variables → Actions → **Variables** → New variable
-   - Nome: `API_URL` — Valore: indirizzo Render (es. `https://giguiya-api.onrender.com`, senza `/` finale)
-2. Actions → "Pubblica su GitHub Pages" → **Run workflow**.
+Il workflow usa già `https://giguiya-api-wpje.onrender.com`. Se l'indirizzo Render cambia:
+Settings → Secrets and variables → Actions → **Variables** → `API_URL` = nuovo indirizzo (senza `/` finale), poi Actions → "Pubblica su GitHub Pages" → **Run workflow**.
 
 ## Note
 - Piano gratuito Render: il server si spegne dopo ~15 minuti senza visite; la prima apertura può richiedere circa un minuto.
