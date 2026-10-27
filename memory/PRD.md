@@ -69,6 +69,9 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 - Passi utente: DNS Aruba (4 A GitHub + CNAME www), Pages custom domain + Enforce HTTPS, poi Save to GitHub, poi FRONTEND_URL su Render.
 - 2026-10-25 verificato: https://giguiya.it live (HTTPS attivo, base "/", apiUrl onrender), github.io → 301 giguiya.it, www → 301 giguiya.it (CNAME ok su Cloudflare DNS, Google ancora in cache), CORS Render accetta https://giguiya.it, /eventi servito via 404.html SPA.
 
+## Update 2026-10-26 (documentazione)
+- /app/docs/DOCUMENTAZIONE.md (21 capitoli, italiano, nessuna password) + /app/docs/Giguiya_Documentazione.pdf (28 pagine, copertina scura/oro, indice) generato con /app/docs/build_pdf.py (markdown + Chromium headless). Verificato visivamente pagina per pagina.
+
 ## Backlog
 - P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.

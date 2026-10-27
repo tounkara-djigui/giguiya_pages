@@ -348,8 +348,9 @@ I file `.env` non vengono mai inviati a GitHub (sono esclusi da `.gitignore`).
 ```
 mongodb+srv://tounkaradjg_db_user:PASSWORD@giguiya.7j8w7bv.mongodb.net/?compressors=zlib
 ```
-   - la parte dopo i due punti è la password;
-   - la `@` separa la password dall'indirizzo del cluster: non va tolta.
+
+La parte dopo i due punti è la password. La `@` separa la password dall'indirizzo del cluster: non va tolta.
+
 6. Il database `giguiya` e le raccolte vengono creati dal server al primo avvio.
 
 ---
@@ -587,7 +588,9 @@ npx ng generate component features/nuova/nuova.page --skip-tests
 ```
 { path: 'nuova', loadComponent: () => import('./features/nuova/nuova.page'), title: 'Nuova · Giguiya' },
 ```
-   Il componente deve avere `export default`, come le altre pagine.
+
+Il componente deve avere `export default`, come le altre pagine.
+
 3. Aggiungete il link nel menu, in `shared/components/navbar`.
 
 ### 15.5 Aggiungere un endpoint al server
