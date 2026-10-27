@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'member';
+export type Role = 'admin' | 'member' | 'pending';
 
 export interface User {
   id: string;
@@ -7,6 +7,7 @@ export interface User {
   last_name: string;
   phone?: string | null;
   role: Role;
+  is_super_admin?: boolean;
 }
 
 export interface MessageResponse {

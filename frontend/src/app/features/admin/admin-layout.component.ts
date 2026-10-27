@@ -21,6 +21,11 @@ import { Icons } from '../../shared/icons';
             <lucide-icon [img]="l.icon" [size]="18" /> {{ l.label }}
           </a>
         }
+        @if (auth.user()?.is_super_admin) {
+          <a routerLink="/admin/staff" routerLinkActive="active" class="admin-link" data-testid="admin-nav-staff">
+            <lucide-icon [img]="i.ShieldCheck" [size]="18" /> Staff
+          </a>
+        }
         <div class="spacer hide-mobile"></div>
         <a routerLink="/" class="admin-link" data-testid="admin-nav-site"><lucide-icon [img]="i.Globe" [size]="18" /> Vai al sito</a>
         <button class="admin-link as-btn" (click)="auth.logout()" data-testid="admin-logout-button"><lucide-icon [img]="i.LogOut" [size]="18" /> Esci</button>

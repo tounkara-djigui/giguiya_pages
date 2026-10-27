@@ -35,8 +35,8 @@
   width: 100%;
   padding: 14px 16px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(12, 13, 16, 0.7);
+  border: 1px solid var(--line-2);
+  background: var(--input-bg);
   color: var(--text);
   font-family: var(--font-body);
   font-size: 0.98rem;
@@ -49,7 +49,7 @@
   outline: none;
   border-color: var(--gold);
   box-shadow: 0 0 0 4px rgba(212, 160, 60, 0.12);
-  background: rgba(12, 13, 16, 0.95);
+  background: var(--input-bg-focus);
 }
 
 .input.invalid { border-color: rgba(239, 68, 68, 0.6); }
@@ -63,7 +63,7 @@ input[type='date'].input { color-scheme: dark; }
 
 .field-error {
   font-size: 0.8rem;
-  color: #fca5a5;
+  color: var(--err-text);
 }
 
 .checkbox {
@@ -92,8 +92,8 @@ input[type='date'].input { color-scheme: dark; }
   align-items: flex-start;
 }
 
-.alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fecaca; }
-.alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; }
+.alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--err-text); }
+.alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--ok-text); }
 .alert-info { background: rgba(212, 160, 60, 0.08); border: 1px solid var(--gold-border); color: var(--gold-light); }
 
 .switch {
@@ -101,8 +101,8 @@ input[type='date'].input { color-scheme: dark; }
   width: 44px;
   height: 24px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #23262f;
+  border: 1px solid var(--line-2);
+  background: var(--switch-bg);
   cursor: pointer;
   transition: background-color 0.25s ease, border-color 0.25s ease;
   flex-shrink: 0;

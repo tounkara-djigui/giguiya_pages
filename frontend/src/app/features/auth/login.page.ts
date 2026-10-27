@@ -45,7 +45,7 @@ import { Icons } from '../../shared/icons';
   styles: `
     .small { font-size: .85rem; }
     .alt { display: grid; gap: 10px; }
-    .alt-item { display: flex; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,.06); transition: border-color .2s ease, background-color .2s ease; }
+    .alt-item { display: flex; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); transition: border-color .2s ease, background-color .2s ease; }
     .alt-item:hover { border-color: var(--gold-border-strong); background: rgba(212,160,60,.05); }
     .alt-item lucide-icon { color: var(--gold); }
     .alt-item span { display: flex; flex-direction: column; }

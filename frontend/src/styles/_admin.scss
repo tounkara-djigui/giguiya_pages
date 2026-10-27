@@ -11,7 +11,7 @@
 
 .admin-side {
   border-right: 1px solid var(--gold-border);
-  background: #0f1014;
+  background: var(--bg-alt);
   padding: 24px 16px;
   display: flex;
   gap: 6px;
@@ -40,7 +40,7 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.admin-link:hover { background: rgba(255, 255, 255, 0.04); color: var(--text); }
+.admin-link:hover { background: var(--hover); color: var(--text); }
 .admin-link.active { background: rgba(212, 160, 60, 0.12); color: var(--gold-light); }
 
 .admin-main {
@@ -84,7 +84,7 @@
 
 .table td {
   padding: 14px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--line);
   vertical-align: middle;
 }
 

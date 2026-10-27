@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from app.core.config import settings
 from app.core.database import NO_ID, get_db
 from app.core.security import (clear_auth_cookies, decode_token, find_user, get_current_user, hash_password,
-                               set_access_cookie, set_auth_cookies, verify_password)
+                               is_approved_admin, is_super_admin, set_access_cookie, set_auth_cookies,
+                               verify_password)
 from app.core.utils import new_id, utcnow
 from app.schemas.auth import (AdminRegisterIn, ChangePasswordIn, EmailIn, LoginIn, MessageOut,
                               SetPasswordIn, TokenIn, UserOut)
@@ -37,6 +38,11 @@ def _ensure_not_locked(attempt: dict | None) -> None:
         raise HTTPException(status_code=429, detail="Troppi tentativi. Riprova tra 15 minuti.")
 
 
+def _out(user: dict) -> dict:
+    role = "pending" if user["role"] == "admin" and not is_approved_admin(user) else user["role"]
+    return {**user, "role": role, "is_super_admin": is_super_admin(user)}
+
+
 async def _authenticate(email: str, password: str, attempt: dict | None, identifier: str) -> dict:
     user = await get_db().users.find_one({"email": email}, NO_ID)
     if user and verify_password(password, user.get("password_hash")):
@@ -56,10 +62,12 @@ async def login(data: LoginIn, request: Request, response: Response):
     user = await _authenticate(email, data.password, attempt, identifier)
     if user["role"] == "admin" and not user.get("email_verified"):
         raise HTTPException(status_code=403, detail="Conferma prima il tuo indirizzo email tramite il link ricevuto")
+    if user["role"] == "admin" and not is_approved_admin(user):
+        raise HTTPException(status_code=403, detail="Il tuo account è in attesa di approvazione da parte dell'amministratore principale")
     if attempt:
         await get_db().login_attempts.delete_one({"identifier": identifier})
     set_auth_cookies(response, user["id"])
-    return user
+    return _out(user)
 
 
 @router.post("/logout", response_model=MessageOut)
@@ -70,7 +78,7 @@ async def logout(response: Response):
 
 @router.get("/me", response_model=UserOut)
 async def me(user: dict = Depends(get_current_user)):
-    return user
+    return _out(user)
 
 
 @router.post("/refresh", response_model=UserOut)
@@ -82,7 +90,7 @@ async def refresh(request: Request, response: Response):
     if not user:
         raise HTTPException(status_code=401, detail="Utente non trovato")
     set_access_cookie(response, user["id"])
-    return user
+    return _out(user)
 
 
 @router.post("/admin/register", response_model=MessageOut)
@@ -94,7 +102,7 @@ async def admin_register(data: AdminRegisterIn):
     if user and (user["role"] != "admin" or user.get("email_verified")):
         raise HTTPException(status_code=409, detail="Esiste già un account con questa email")
     if not user:
-        user = {"id": new_id(), "email": email, "role": "admin", "email_verified": False,
+        user = {"id": new_id(), "email": email, "role": "admin", "email_verified": False, "admin_status": "pending",
                 "first_name": data.first_name.strip(), "last_name": data.last_name.strip(), "phone": None,
                 "password_hash": hash_password(data.password), "created_at": utcnow()}
         await get_db().users.insert_one(dict(user))
@@ -108,6 +116,11 @@ async def admin_register(data: AdminRegisterIn):
 async def verify_email(data: TokenIn):
     token = await consume_token(data.token, ("verify_email",))
     await get_db().users.update_one({"id": token["user_id"]}, {"$set": {"email_verified": True}})
+    user = await find_user(token["user_id"])
+    if user and user["role"] == "admin" and not is_approved_admin(user):
+        subject, html = tpl.staff_request(user)
+        await try_send_email(to=settings.ADMIN_EMAIL, subject=subject, html=html)
+        return MessageOut(message="Email confermata. Il tuo account sarà attivo dopo l'approvazione dell'amministratore principale.")
     return MessageOut(message="Email confermata. Ora puoi accedere.")
 
 

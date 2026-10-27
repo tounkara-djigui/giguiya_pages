@@ -17,8 +17,8 @@ import { Icons } from '../../shared/icons';
           @case ('ok') {
             <div class="ic ok"><lucide-icon [img]="i.CircleCheck" [size]="32" /></div>
             <h3 class="h3 mt-3" data-testid="verify-email-success">Email confermata!</h3>
-            <p class="muted mt-2">Il tuo account amministratore è attivo.</p>
-            <a routerLink="/accesso" class="btn btn-gold mt-4" data-testid="verify-email-login-button">Accedi ora</a>
+            <p class="muted mt-2">Ora l'amministratore principale deve approvare il tuo account: riceverai un'email quando sarà attivo.</p>
+            <a routerLink="/" class="btn btn-gold mt-4" data-testid="verify-email-login-button">Torna al sito</a>
           }
           @default {
             <div class="ic ko"><lucide-icon [img]="i.CircleAlert" [size]="32" /></div>

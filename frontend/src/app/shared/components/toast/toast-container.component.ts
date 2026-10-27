@@ -19,7 +19,7 @@ import { Icons } from '../../icons';
   `,
   styles: `
     .toasts { position: fixed; bottom: 24px; right: 24px; left: 24px; z-index: 120; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
-    .toast { pointer-events: auto; display: flex; align-items: center; gap: 12px; max-width: 420px; padding: 14px 16px; border-radius: 14px; background: rgba(20,22,28,.97); backdrop-filter: blur(16px); border: 1px solid var(--gold-border-strong); box-shadow: 0 20px 50px -15px rgba(0,0,0,.7); font-size: .92rem; animation: fadeUp .35s var(--ease) both; }
+    .toast { pointer-events: auto; display: flex; align-items: center; gap: 12px; max-width: 420px; padding: 14px 16px; border-radius: 14px; background: var(--glass); backdrop-filter: blur(16px); border: 1px solid var(--gold-border-strong); box-shadow: 0 20px 50px -15px rgba(0,0,0,.7); font-size: .92rem; animation: fadeUp .35s var(--ease) both; }
     .toast.success lucide-icon:first-child { color: var(--green); }
     .toast.error { border-color: rgba(239,68,68,.45); }
     .toast.error lucide-icon:first-child { color: var(--red); }

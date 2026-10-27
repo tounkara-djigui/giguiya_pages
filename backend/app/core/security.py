@@ -76,9 +76,24 @@ async def get_current_user(request: Request) -> dict:
     return user
 
 
+def is_super_admin(user: dict) -> bool:
+    return user.get("role") == "admin" and user.get("email", "").lower() == settings.ADMIN_EMAIL.lower()
+
+
+def is_approved_admin(user: dict) -> bool:
+    return (user.get("role") == "admin" and bool(user.get("email_verified"))
+            and (is_super_admin(user) or user.get("admin_status") == "approved"))
+
+
 async def require_admin(user: dict = Depends(get_current_user)) -> dict:
-    if user["role"] != "admin" or not user.get("email_verified"):
+    if not is_approved_admin(user):
         raise HTTPException(status_code=403, detail="Accesso riservato agli amministratori")
+    return user
+
+
+async def require_super_admin(user: dict = Depends(require_admin)) -> dict:
+    if not is_super_admin(user):
+        raise HTTPException(status_code=403, detail="Riservato all'amministratore principale")
     return user
 
 

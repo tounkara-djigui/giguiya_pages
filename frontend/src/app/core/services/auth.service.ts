@@ -64,6 +64,6 @@ export class AuthService {
   }
 
   homeFor(user: User): string {
-    return user.role === 'admin' ? '/admin' : '/area-socio';
+    return user.role === 'admin' ? '/admin' : user.role === 'member' ? '/area-socio' : '/';
   }
 }

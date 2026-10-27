@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,6 +11,7 @@ class ProjectIn(BaseModel):
     summary: str = Field(default="", max_length=600)
     description: str = ""
     image_url: str | None = Field(default=None, max_length=500)
+    gallery: list[Annotated[str, Field(max_length=500)]] = Field(default=[], max_length=12)
     partners: str = Field(default="", max_length=300)
     year_label: str = Field(default="", max_length=40)
     highlights: list[str] = []

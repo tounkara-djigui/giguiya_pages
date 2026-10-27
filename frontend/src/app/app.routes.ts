@@ -31,6 +31,7 @@ export const routes: Routes = [
       { path: 'interessati', loadComponent: () => import('./features/admin/contacts/admin-contacts.page'), title: 'Interessati · Admin Giguiya' },
       { path: 'eventi', loadComponent: () => import('./features/admin/events/admin-events.page'), title: 'Eventi · Admin Giguiya' },
       { path: 'progetti', loadComponent: () => import('./features/admin/projects/admin-projects.page'), title: 'Progetti · Admin Giguiya' },
+      { path: 'staff', loadComponent: () => import('./features/admin/staff/admin-staff.page'), title: 'Staff · Admin Giguiya' },
     ],
   },
   { path: '**', loadComponent: () => import('./features/not-found/not-found.page'), title: 'Pagina non trovata · Giguiya' },

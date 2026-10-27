@@ -22,7 +22,7 @@ const domainValidator = (c: AbstractControl): ValidationErrors | null =>
           <div class="ok"><lucide-icon [img]="i.Mail" [size]="30" /></div>
           <h3 class="h3 mt-3">Controlla la tua casella</h3>
           <p class="muted mt-2">
-            @if (s.emailSent) { Abbiamo inviato il link di conferma a <strong class="gold">{{ s.email }}</strong>. Il link è valido 48 ore. }
+            @if (s.emailSent) { Abbiamo inviato il link di conferma a <strong class="gold">{{ s.email }}</strong>. Il link è valido 48 ore. Dopo la conferma, l'amministratore principale dovrà approvare il tuo account. }
             @else { Account creato, ma l'invio dell'email non è riuscito. Riprova più tardi registrandoti di nuovo con la stessa email. }
           </p>
           <a routerLink="/accesso" class="btn btn-ghost mt-4">Vai al login</a>

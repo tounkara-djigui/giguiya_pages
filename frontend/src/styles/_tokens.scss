@@ -1,19 +1,37 @@
+@mixin dark-text {
+  --text: #f4f4f6;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --gold-light: #f3e5ab;
+  --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4a03c 50%, #9a6b1f 100%);
+  --gold-border: rgba(212, 160, 60, 0.2);
+  --gold-border-strong: rgba(212, 160, 60, 0.5);
+  --line: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.12);
+  --hover: rgba(255, 255, 255, 0.04);
+  --glass: rgba(20, 22, 28, 0.9);
+}
+
 :root {
+  @include dark-text;
   --bg-root: #0c0d10;
   --bg-card: #14161c;
   --bg-card-hover: #1a1d24;
   --bg-elevated: #1e222b;
+  --bg-alt: #0f1014;
+  --bg-deep: #0a0b0d;
+  --nav-bg: rgba(12, 13, 16, 0.9);
+  --input-bg: rgba(12, 13, 16, 0.7);
+  --input-bg-focus: rgba(12, 13, 16, 0.95);
+  --switch-bg: #23262f;
+  --scroll-thumb: #2a2d36;
+  --err-text: #fca5a5;
+  --ok-text: #6ee7b7;
+  --warn-text: #fcd34d;
   --gold: #d4a03c;
-  --gold-light: #f3e5ab;
   --gold-dark: #9a6b1f;
-  --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4a03c 50%, #9a6b1f 100%);
-  --gold-border: rgba(212, 160, 60, 0.2);
-  --gold-border-strong: rgba(212, 160, 60, 0.5);
   --gold-glow: 0 10px 30px -10px rgba(212, 160, 60, 0.25);
   --gold-halo: radial-gradient(circle at 50% 0%, rgba(212, 160, 60, 0.15) 0%, transparent 70%);
-  --text: #f4f4f6;
-  --text-2: #a1a1aa;
-  --text-3: #71717a;
   --green: #10b981;
   --red: #ef4444;
   --blue: #3b82f6;
@@ -24,4 +42,42 @@
   --radius-sm: 10px;
   --nav-h: 76px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg-root: #f6f2ea;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fbf8f1;
+  --bg-elevated: #efe9dc;
+  --bg-alt: #efe8da;
+  --bg-deep: #e9e1d0;
+  --nav-bg: rgba(246, 242, 234, 0.92);
+  --input-bg: #ffffff;
+  --input-bg-focus: #ffffff;
+  --switch-bg: #e2dccf;
+  --scroll-thumb: #cfc6b4;
+  --err-text: #b91c1c;
+  --ok-text: #047857;
+  --warn-text: #b45309;
+  --gold: #b7862c;
+  --gold-light: #8a5f14;
+  --gold-dark: #6b4a10;
+  --gold-gradient: linear-gradient(135deg, #c99a3e 0%, #a8761f 50%, #7a5414 100%);
+  --gold-border: rgba(154, 107, 31, 0.25);
+  --gold-border-strong: rgba(154, 107, 31, 0.55);
+  --gold-glow: 0 10px 30px -12px rgba(122, 84, 20, 0.3);
+  --text: #1c1915;
+  --text-2: #4d483f;
+  --text-3: #7a7468;
+  --line: rgba(28, 25, 21, 0.08);
+  --line-2: rgba(28, 25, 21, 0.15);
+  --hover: rgba(28, 25, 21, 0.04);
+  --glass: rgba(255, 255, 255, 0.94);
+  color-scheme: light;
+}
+
+// Zones over photos keep light text in both themes
+.hero, .ph.has-bg, .hero-ev, .auth-shell .side, .tile, .event-card .media {
+  @include dark-text;
 }

@@ -52,11 +52,11 @@
   font-family: var(--font-display);
   font-size: 2.4rem;
 
-  &.ok { color: #6ee7b7; }
-  &.warn { color: #fcd34d; }
+  &.ok { color: var(--ok-text); }
+  &.warn { color: var(--warn-text); }
 }
 
-.checks { display: grid; gap: 1px; background: rgba(255, 255, 255, 0.06); border-radius: 12px; overflow: hidden; }
+.checks { display: grid; gap: 1px; background: var(--line); border-radius: 12px; overflow: hidden; }
 .check { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--bg-card); }
 
 .list {
@@ -72,7 +72,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--line);
   }
 }
 

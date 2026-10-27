@@ -82,7 +82,7 @@
   border-bottom: 1px solid var(--gold-border);
   overflow: hidden;
   padding: 22px 0;
-  background: #0f1014;
+  background: var(--bg-alt);
 
   .track {
     display: flex;
@@ -108,7 +108,7 @@
   display: flex;
   gap: 18px;
   padding-bottom: 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--line);
 
   lucide-icon { color: var(--gold); margin-top: 4px; flex-shrink: 0; }
   h4 { font-size: 1.5rem; margin-bottom: 4px; }
@@ -133,7 +133,7 @@
   .quote { left: -48px; }
 }
 
-.projects-sec { background: #0f1014; border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border); }
+.projects-sec { background: var(--bg-alt); border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border); }
 
 .mali-lead { max-width: 46ch; }
 

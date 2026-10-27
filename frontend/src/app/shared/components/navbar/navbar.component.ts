@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { LucideAngularModule } from 'lucide-angular';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { Icons } from '../../icons';
 import { LogoComponent } from '../logo/logo.component';
 
@@ -14,6 +15,7 @@ import { LogoComponent } from '../logo/logo.component';
 })
 export class NavbarComponent {
   protected auth = inject(AuthService);
+  protected theme = inject(ThemeService);
   private router = inject(Router);
   protected readonly i = Icons;
   protected readonly links = [

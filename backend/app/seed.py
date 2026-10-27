@@ -89,11 +89,14 @@ async def seed() -> None:
         await db.users.insert_one({
             "id": new_id(), "email": settings.ADMIN_EMAIL, "password_hash": hash_password(settings.ADMIN_PASSWORD),
             "first_name": "Admin", "last_name": "Giguiya", "phone": None, "role": "admin",
-            "email_verified": True, "created_at": utcnow(),
+            "email_verified": True, "admin_status": "approved", "created_at": utcnow(),
         })
     elif not verify_password(settings.ADMIN_PASSWORD, admin.get("password_hash")):
         await db.users.update_one({"email": settings.ADMIN_EMAIL},
                                   {"$set": {"password_hash": hash_password(settings.ADMIN_PASSWORD)}})
+    await db.users.update_many(
+        {"role": "admin", "email": {"$ne": settings.ADMIN_EMAIL.lower()}, "admin_status": {"$exists": False}},
+        {"$set": {"admin_status": "pending"}})
     if not await db.projects.count_documents({}):
         await db.projects.insert_many([_doc(p) for p in PROJECTS])
     if not await db.events.count_documents({}):

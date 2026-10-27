@@ -76,7 +76,7 @@
 .btn-gold:hover { box-shadow: 0 16px 40px -12px rgba(212, 160, 60, 0.55); }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--hover);
   border-color: var(--gold-border);
   color: var(--text);
 }
@@ -89,7 +89,7 @@
 .btn-danger {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  color: var(--err-text);
 }
 
 .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
@@ -133,7 +133,7 @@
 }
 
 .glass {
-  background: rgba(20, 22, 28, 0.82);
+  background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(212, 160, 60, 0.25);
@@ -163,14 +163,14 @@
   white-space: nowrap;
 }
 
-.badge-green { color: #6ee7b7; border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1); }
-.badge-red { color: #fca5a5; border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.1); }
-.badge-muted { color: var(--text-2); border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); }
+.badge-green { color: var(--ok-text); border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.1); }
+.badge-red { color: var(--err-text); border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.1); }
+.badge-muted { color: var(--text-2); border-color: var(--line-2); background: var(--hover); }
 
 .chip {
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line-2);
   background: transparent;
   color: var(--text-2);
   cursor: pointer;
@@ -232,7 +232,7 @@
 
 .skeleton {
   border-radius: var(--radius);
-  background: linear-gradient(90deg, #14161c 25%, #1e222b 50%, #14161c 75%);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite linear;
 }
@@ -263,7 +263,7 @@
 .modal {
   width: 100%;
   max-width: 720px;
-  background: rgba(20, 22, 28, 0.97);
+  background: var(--glass);
   border: 1px solid var(--gold-border-strong);
   border-radius: var(--radius);
   padding: 32px;

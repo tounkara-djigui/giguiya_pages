@@ -70,7 +70,7 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2d36;
+  background: var(--scroll-thumb);
   border-radius: 10px;
 }
 

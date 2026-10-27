@@ -12,6 +12,11 @@
     </nav>
 
     <div class="actions">
+      <button class="btn btn-ghost btn-sm btn-icon" (click)="theme.toggle()" data-testid="theme-toggle-button"
+              [attr.aria-label]="theme.theme() === 'dark' ? 'Passa al tema chiaro' : 'Passa al tema scuro'"
+              [title]="theme.theme() === 'dark' ? 'Tema chiaro' : 'Tema scuro'">
+        <lucide-icon [img]="theme.theme() === 'dark' ? i.Sun : i.Moon" [size]="16" />
+      </button>
       @if (auth.user(); as u) {
         <a [routerLink]="auth.homeFor(u)" class="btn btn-ghost btn-sm hide-mobile" data-testid="navbar-area-link">
           <lucide-icon [img]="u.role === 'admin' ? i.LayoutDashboard : i.IdCard" [size]="16" />

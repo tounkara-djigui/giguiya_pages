@@ -57,7 +57,7 @@ import { MediaUrlPipe } from '../../pipes/media-url.pipe';
     .sum { font-size: .92rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .meta { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
     .meta .info-row { font-size: .85rem; }
-    .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; align-items: center; }
+    .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
   `,
 })
 export class EventCardComponent {

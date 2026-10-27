@@ -5,6 +5,7 @@ export interface ProjectInput {
   summary: string;
   description: string;
   image_url: string | null;
+  gallery: string[];
   partners: string;
   year_label: string;
   highlights: string[];

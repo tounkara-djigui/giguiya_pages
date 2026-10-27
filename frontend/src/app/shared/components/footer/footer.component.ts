@@ -54,7 +54,7 @@ import { LogoComponent } from '../logo/logo.component';
     </footer>
   `,
   styles: `
-    .footer { border-top: 1px solid var(--gold-border); background: #0a0b0d; padding: 96px 0 40px; position: relative; overflow: hidden; }
+    .footer { border-top: 1px solid var(--gold-border); background: var(--bg-deep); padding: 96px 0 40px; position: relative; overflow: hidden; }
     .footer::before { content: ''; position: absolute; inset: 0; background: var(--gold-halo); opacity: .6; pointer-events: none; }
     .cta-strip { display: flex; flex-direction: column; gap: 28px; justify-content: space-between; padding-bottom: 64px; position: relative; }
     @media (min-width: 1024px) { .cta-strip { flex-direction: row; align-items: flex-end; } }

@@ -81,6 +81,29 @@ def admin_verification(first_name: str, token: str) -> tuple[str, str]:
     return "Conferma il tuo account amministratore Giguiya", _layout("Conferma il tuo account", body)
 
 
+def staff_request(staff: dict) -> tuple[str, str]:
+    name = f"{staff['first_name']} {staff['last_name']}"
+    body = (
+        "<p>Ciao,</p>"
+        f"<p><strong style=\"color:#F3E5AB\">{escape(name)}</strong> ({escape(staff['email'])}) ha confermato la sua email "
+        "e chiede di diventare amministratore del sito.</p>"
+        "<p>Finché non approvi la richiesta, questa persona non può accedere all'area di gestione.</p>"
+        f"{_button(f'{settings.FRONTEND_URL}/admin/staff', 'Gestisci le richieste')}"
+        "<p>Se non conosci questa persona, puoi eliminare la richiesta dalla stessa pagina.</p>"
+    )
+    return f"Nuova richiesta di accesso staff: {name}", _layout("Nuova richiesta staff", body)
+
+
+def staff_approved(first_name: str) -> tuple[str, str]:
+    body = (
+        f"<p>Ciao {escape(first_name)},</p>"
+        "<p>il tuo account amministratore per il sito dell'Associazione Giguiya è stato approvato.</p>"
+        "<p>Ora puoi accedere all'area di gestione con la tua email e la password scelta.</p>"
+        f"{_button(f'{settings.FRONTEND_URL}/accesso', 'Accedi')}"
+    )
+    return "Il tuo account Giguiya è stato approvato", _layout("Account approvato", body)
+
+
 def password_reset(first_name: str, token: str) -> tuple[str, str]:
     url = f"{settings.FRONTEND_URL}/accesso/imposta-password?token={token}"
     body = (

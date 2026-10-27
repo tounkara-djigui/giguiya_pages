@@ -12,7 +12,7 @@
   p { margin-top: 4px; }
 }
 
-.aims-sec { background: #0f1014; border-block: 1px solid var(--gold-border); }
+.aims-sec { background: var(--bg-alt); border-block: 1px solid var(--gold-border); }
 
 .aims {
   display: grid;
@@ -41,7 +41,7 @@
 .organ lucide-icon { color: var(--gold); margin-top: 4px; flex-shrink: 0; }
 .organ h4 { font-size: 1.45rem; }
 
-.partners-sec { background: #0f1014; border-block: 1px solid var(--gold-border); }
+.partners-sec { background: var(--bg-alt); border-block: 1px solid var(--gold-border); }
 .partners { display: flex; flex-wrap: wrap; gap: 28px 40px; align-items: center; }
 .partners span { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.4rem); }
 .partners i { color: var(--gold); font-style: normal; }

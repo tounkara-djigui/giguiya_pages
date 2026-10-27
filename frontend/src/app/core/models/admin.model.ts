@@ -10,6 +10,16 @@ export interface AdminStats {
   current_year: number;
 }
 
+export interface StaffMember {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  email_verified: boolean;
+  admin_status: 'pending' | 'approved';
+  created_at: string;
+}
+
 export interface Contact {
   email: string;
   first_name: string;

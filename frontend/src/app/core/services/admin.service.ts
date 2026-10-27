@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { API_URL } from '../config';
-import { AdminStats, Contact } from '../models/admin.model';
+import { AdminStats, Contact, StaffMember } from '../models/admin.model';
 import { Booking, EventInput, EventItem } from '../models/event.model';
 import { Member, MemberUpdate } from '../models/member.model';
 import { Project, ProjectInput } from '../models/project.model';
@@ -80,5 +80,17 @@ export class AdminService {
     const body = new FormData();
     body.append('file', file);
     return this.http.post<{ url: string; path: string }>(`${this.base}/uploads`, body);
+  }
+
+  staff() {
+    return this.http.get<StaffMember[]>(`${this.base}/staff`);
+  }
+
+  staffAction(id: string, action: 'approve' | 'revoke') {
+    return this.http.post<MessageResponse>(`${this.base}/staff/${id}/${action}`, {});
+  }
+
+  deleteStaff(id: string) {
+    return this.http.delete<MessageResponse>(`${this.base}/staff/${id}`);
   }
 }

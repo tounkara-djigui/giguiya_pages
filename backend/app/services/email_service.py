@@ -16,6 +16,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 EMAIL_BASE_URL = "https://integrations.emergentagent.com"
+RESEND_URL = "https://api.resend.com/emails"
 
 _SHORTENERS = ("bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "goo.gl", "rebrand.ly")
 _CRED_ASK = ("reply with your password", "reply with the code", "send your password", "cvv",
@@ -125,8 +126,30 @@ def _smtp_send(to: str, subject: str, html: str) -> None:
         server.send_message(msg)
 
 
+async def _resend_send(to: str, subject: str, html: str) -> str | None:
+    payload = {"from": formataddr((settings.EMAIL_FROM_NAME, settings.EMAIL_FROM)), "to": [to],
+               "subject": subject, "html": html}
+    if settings.EMAIL_REPLY_TO:
+        payload["reply_to"] = settings.EMAIL_REPLY_TO
+    headers = {"Authorization": f"Bearer {settings.RESEND_API_KEY}", "User-Agent": "giguiya-api/1.0"}
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(RESEND_URL, json=payload, headers=headers)
+    except httpx.RequestError as e:
+        logger.error(f"Resend network error: {e}")
+        raise HTTPException(status_code=502, detail="Invio email non riuscito")
+    if resp.status_code == 429:
+        raise HTTPException(status_code=429, detail="Troppi invii email, riprova tra poco")
+    if resp.status_code >= 400:
+        logger.error(f"Resend send failed: {resp.status_code} {resp.text}")
+        raise HTTPException(status_code=502, detail="Invio email non riuscito")
+    return resp.json().get("id")
+
+
 async def send_email(*, to: str, subject: str, html: str) -> str | None:
     _assert_safe_email(subject, html)
+    if settings.RESEND_API_KEY:
+        return await _resend_send(to, subject, html)
     if settings.SMTP_HOST:
         try:
             await asyncio.to_thread(_smtp_send, to, subject, html)

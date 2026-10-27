@@ -29,13 +29,7 @@ services:
         value: Giguiya
       - key: EMAIL_REPLY_TO
         sync: false
-      - key: SMTP_HOST
-        value: smtps.aruba.it
-      - key: SMTP_PORT
-        value: "465"
-      - key: SMTP_USER
+      - key: RESEND_API_KEY
         sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_FROM
-        sync: false
+      - key: EMAIL_FROM
+        value: info@giguiya.it

@@ -15,6 +15,8 @@ class Settings:
     ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
     ADMIN_EMAIL_DOMAIN = os.environ["ADMIN_EMAIL_DOMAIN"].lower()
     EMERGENT_EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY")
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+    EMAIL_FROM = os.environ.get("EMAIL_FROM")
     SMTP_HOST = os.environ.get("SMTP_HOST")
     SMTP_PORT = int(os.environ.get("SMTP_PORT") or 465)
     SMTP_USER = os.environ.get("SMTP_USER")

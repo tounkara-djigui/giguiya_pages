@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
@@ -38,6 +40,17 @@ class UserOut(BaseModel):
     last_name: str
     phone: str | None = None
     role: str
+    is_super_admin: bool = False
+
+
+class StaffOut(BaseModel):
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+    email_verified: bool = False
+    admin_status: str = "pending"
+    created_at: datetime
 
 
 class MessageOut(BaseModel):
