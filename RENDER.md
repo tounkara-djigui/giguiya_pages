@@ -3,7 +3,7 @@
 Sito (parte grafica): GitHub Pages con dominio `https://giguiya.it` (DNS Aruba: 4 record A verso GitHub + CNAME `www` → `tounkara-djigui.github.io`; MX invariato)
 Server (backend): Render, piano gratuito — configurato in `render.yaml`
 Database e immagini: MongoDB Atlas, piano gratuito (le immagini caricate dallo staff sono salvate nel database)
-Email: casella Aruba di giguiya.it via SMTP (oppure Resend, vedi sotto)
+Email: Resend (API HTTPS, mittente info@giguiya.it) – il piano gratuito di Render blocca SMTP
 
 ## 1. Database (MongoDB Atlas)
 1. Create un account gratuito su https://www.mongodb.com/cloud/atlas e un cluster **M0 (Free)**, regione Europa.
@@ -17,15 +17,13 @@ Email: casella Aruba di giguiya.it via SMTP (oppure Resend, vedi sotto)
 3. Compilate i valori richiesti:
    - `MONGO_URL`: indirizzo di Atlas del punto 1
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD`: account amministratore iniziale (email @giguiya.it)
-   - `SMTP_USER`: indirizzo completo della casella Aruba (es. la casella dell'associazione)
-   - `SMTP_PASSWORD`: password di quella casella
-   - `SMTP_FROM`: mittente delle email (di solito uguale a `SMTP_USER`)
+   - `RESEND_API_KEY`: chiave API di Resend (vedi DOCUMENTAZIONE.md, capitolo 13)
+   - `EMAIL_FROM`: mittente delle email, es. info@giguiya.it (dominio verificato su Resend)
    - `EMAIL_REPLY_TO`: indirizzo a cui rispondono i soci
 4. Al termine Render mostra l'indirizzo del server, es. `https://giguiya-api.onrender.com`.
    Controllo: aprite `https://giguiya-api.onrender.com/api/health` → deve mostrare `{"status":"ok"}`.
 
-Email con Resend invece di Aruba: in Render impostate `SMTP_HOST=smtp.resend.com`, `SMTP_PORT=465`,
-`SMTP_USER=resend`, `SMTP_PASSWORD=<chiave API Resend>`, `SMTP_FROM=<indirizzo @giguiya.it verificato su Resend>`.
+SMTP (casella Aruba) non funziona sul piano Free di Render: le porte SMTP sono bloccate.
 
 ## 3. Collegare il sito su GitHub Pages al server
 Il workflow usa già `https://giguiya-api-wpje.onrender.com`. Se l'indirizzo Render cambia:

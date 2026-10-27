@@ -1,7 +1,7 @@
 # Giguiya – Documentazione tecnica e operativa
 
 **Sito web dell'Associazione Giguiya (comunità maliana a Torino)**
-Versione del documento: 1.0 – 26 ottobre 2026
+Versione del documento: 1.1 – 27 ottobre 2026
 
 ---
 
@@ -19,7 +19,7 @@ Versione del documento: 1.0 – 26 ottobre 2026
 10. Configurazione da zero – MongoDB Atlas
 11. Configurazione da zero – Render
 12. Configurazione da zero – Dominio e DNS Aruba
-13. Email (casella Aruba)
+13. Email (Resend)
 14. Ambiente di sviluppo locale su Windows
 15. Come fare modifiche e pubblicarle
 16. Gestione quotidiana (area admin)
@@ -81,7 +81,7 @@ Gli importi di iscrizione e quota annuale sono mostrati come **"xx €"** in att
         │                     │
         ▼                     ▼
  MongoDB Atlas (M0)      Casella email Aruba
- cluster "giguiya"       info@giguiya.it (SMTP smtps.aruba.it)
+ cluster "giguiya"       info@giguiya.it (via Resend, HTTPS)
  dati + immagini
 ```
 
@@ -250,7 +250,7 @@ La documentazione interattiva delle API si trova su `https://giguiya-api-wpje.on
   - accesso valido 60 minuti, rinnovo automatico per 7 giorni;
   - cookie `Secure` e `SameSite=None`.
 - **Blocco tentativi**: dopo 5 login errati l'accesso è bloccato per 15 minuti.
-- **Staff**: ci si registra solo con email @giguiya.it, confermata via email.
+- **Staff**: ci si registra solo con email @giguiya.it, confermata via email. Dopo la conferma l'account resta **in attesa** finché l'amministratore principale (`ADMIN_EMAIL`) non lo approva dalla pagina **Admin → Staff**. Solo l'amministratore principale può approvare, revocare o eliminare gli account staff.
 - **CORS**: il server accetta richieste solo dal sito indicato in `FRONTEND_URL`, cioè https://giguiya.it, e da `http://localhost:3000` per lo sviluppo.
 - **Email**: i testi inviati vengono controllati e ripuliti prima dell'invio.
 
@@ -266,7 +266,7 @@ A ogni avvio il server:
 
 ### 6.4 Email e file
 
-- **Email**: se `SMTP_HOST` è impostato, il server invia tramite SMTP, cioè la casella Aruba. Altrimenti usa il servizio email dell'ambiente di sviluppo Emergent.
+- **Email**: se `RESEND_API_KEY` è impostata il server invia tramite l'API di Resend (HTTPS). In alternativa usa SMTP (`SMTP_HOST`), che però **non funziona sul piano gratuito di Render**, perché le porte SMTP sono bloccate. Senza nessuna delle due usa il servizio email dell'ambiente di sviluppo Emergent.
 - **Immagini caricate**: senza `EMERGENT_LLM_KEY` vengono salvate nel database MongoDB (GridFS, raccolta `uploads`). È il caso di Render.
 
 ---
@@ -304,11 +304,8 @@ Nome database: **`giguiya`**.
 | `ADMIN_EMAIL_DOMAIN` | `giguiya.it` | dominio obbligatorio per lo staff |
 | `EMAIL_FROM_NAME` | `Giguiya` | nome del mittente |
 | `EMAIL_REPLY_TO` | `info@giguiya.it` | indirizzo di risposta |
-| `SMTP_HOST` | `smtps.aruba.it` | |
-| `SMTP_PORT` | `465` | SSL |
-| `SMTP_USER` | `info@giguiya.it` | |
-| `SMTP_PASSWORD` | password della casella | **segreto** |
-| `SMTP_FROM` | `info@giguiya.it` | |
+| `RESEND_API_KEY` | chiave API di Resend (`re_...`) | **segreto** |
+| `EMAIL_FROM` | `info@giguiya.it` | mittente, sul dominio verificato in Resend |
 
 ### 8.2 Frontend
 
@@ -429,22 +426,28 @@ Per far funzionare il login anche su iPhone/Safari, il server può avere un indi
 
 ---
 
-## 13. Email (casella Aruba)
+## 13. Email (Resend)
 
-| Parametro | Valore |
-|---|---|
-| Server SMTP | `smtps.aruba.it` |
-| Porta | `465` (SSL) |
-| Utente | `info@giguiya.it` |
-| Password | password della casella, da inserire solo su Render |
+Il piano gratuito di Render blocca le porte SMTP (25, 465, 587), quindi il sito non può inviare dalla casella Aruba. Le email partono tramite **Resend** (gratuito fino a 3.000 email al mese), con mittente `info@giguiya.it`. Le risposte dei soci arrivano comunque nella casella Aruba, grazie a `EMAIL_REPLY_TO`.
+
+**Configurazione**
+1. Create un account su https://resend.com.
+2. **Domains → Add Domain** → `giguiya.it`, regione Europa.
+3. Resend mostra alcuni record DNS: TXT per DKIM (`resend._domainkey`), MX e TXT per `send`. Inseriteli **esattamente** nel pannello DNS di Aruba.
+   - Non create un secondo record SPF su `@` e non toccate il record MX principale della posta.
+4. Premete **Verify** in Resend e aspettate lo stato **Verified**.
+5. **API Keys → Create API Key** con permesso *Sending access*. Copiatela: viene mostrata una sola volta.
+6. Su Render, in **Environment**, impostate `RESEND_API_KEY` e `EMAIL_FROM=info@giguiya.it`, poi salvate.
 
 **Email inviate dal sito**
 - conferma della domanda di iscrizione e link per creare la password;
 - verifica dell'email dello staff;
+- avviso all'amministratore principale per ogni nuova richiesta staff confermata;
+- avviso allo staff quando viene approvato;
 - recupero password;
 - conferma di prenotazione degli eventi.
 
-**Alternativa Resend**: `SMTP_HOST=smtp.resend.com`, `SMTP_PORT=465`, `SMTP_USER=resend`, `SMTP_PASSWORD=<chiave API>`, `SMTP_FROM=<indirizzo @giguiya.it verificato>`.
+Dove controllare: Resend → **Emails**, per lo stato di ogni invio; Render → **Logs**, cercando `Resend send failed`.
 
 Se le email finiscono nello spam, verificate su Aruba che il record SPF sia presente e, se disponibile nel pannello, attivate la firma **DKIM** della casella.
 
@@ -511,6 +514,8 @@ SMTP_USER=info@giguiya.it
 SMTP_PASSWORD=PASSWORD_CASELLA
 SMTP_FROM=info@giguiya.it
 ```
+In locale, dal vostro PC, la casella Aruba via SMTP funziona. In alternativa usate `RESEND_API_KEY` ed `EMAIL_FROM`, come su Render.
+
 Avvio:
 ```
 uvicorn server:app --reload --port 8001
@@ -620,8 +625,13 @@ Guida ufficiale: https://angular.dev/update-guide
    - registrate la quota per l'anno;
    - reinviate l'invito se il socio non ha ricevuto l'email.
 3. **Eventi**: **Nuovo evento** → titolo, date, luogo, descrizione, posti, immagine (caricamento dal computer, max 8 MB). Il pulsante con l'icona delle persone mostra le prenotazioni.
-4. **Progetti**: stessa logica degli eventi.
-5. **Nuovi membri dello staff**: si registrano su `/accesso/registrazione-admin` con un'email @giguiya.it e confermano dal link ricevuto.
+4. **Progetti**: stessa logica degli eventi. Oltre all'immagine principale potete caricare una **galleria** fino a 12 foto, che i visitatori sfogliano a schermo intero.
+5. **Nuovi membri dello staff**:
+   - si registrano su `/accesso/registrazione-admin` con un'email @giguiya.it e confermano dal link ricevuto;
+   - l'amministratore principale riceve un'email di avviso;
+   - in **Admin → Staff** l'amministratore principale preme **Approva**, oppure **Revoca** o elimina;
+   - finché l'account non è approvato, lo staff non può entrare.
+6. **Tema chiaro/scuro**: ogni visitatore può cambiarlo con il pulsante sole/luna nel menu. La scelta resta salvata nel suo browser.
 
 ---
 
@@ -652,7 +662,8 @@ Conservate i backup in un luogo sicuro: contengono dati personali dei soci.
 | Accesso Atlas | account Atlas (login con GitHub) | – |
 | Utente database | Atlas → Database Access | Edit Password, poi aggiornare `MONGO_URL` su Render |
 | Admin del sito | Render → `ADMIN_EMAIL` / `ADMIN_PASSWORD` | cambiare su Render, che riavvia il server |
-| Casella email | Aruba Webmail | cambiare su Aruba, poi aggiornare `SMTP_PASSWORD` su Render |
+| Casella email | Aruba Webmail | cambiare su Aruba (non serve aggiornare Render) |
+| Chiave Resend | Render → `RESEND_API_KEY` | creare una nuova chiave in Resend, aggiornare Render, eliminare la vecchia |
 | Chiave delle sessioni | Render → `JWT_SECRET` | rigenerare; tutti dovranno rifare il login |
 | Dominio e DNS | Area Clienti Aruba | – |
 
@@ -687,7 +698,8 @@ Se in futuro serve un server sempre acceso, Render offre il piano **Starter**. I
 | Il sito non mostra gli eventi | server in pausa o indirizzo API errato | attendere un minuto; verificare `/api/health` |
 | Errore CORS nella console del browser | `FRONTEND_URL` diverso dal dominio | `FRONTEND_URL=https://giguiya.it` su Render |
 | Login non funziona su iPhone/Safari | sito e server su domini diversi | configurare `api.giguiya.it` (12.4) |
-| Le email non arrivano | password SMTP errata o spam | controllare i log di Render (`SMTP send failed`), la cartella spam e SPF/DKIM |
+| Le email non arrivano | dominio non verificato su Resend, chiave errata o spam | Resend → Emails e Domains; log di Render (`Resend send failed`); cartella spam |
+| Lo staff non riesce ad accedere dopo la conferma | account in attesa di approvazione | l'amministratore principale lo approva in Admin → Staff |
 | giguiya.it mostra un "404" di GitHub | dominio non impostato in Pages | Settings → Pages → Custom domain |
 | "DNS check unsuccessful" | DNS non ancora propagati o record errati | verificare la tabella 12.1 e attendere |
 | Password admin cambiata e poi "tornata indietro" | `ADMIN_PASSWORD` riallinea al riavvio | cambiare `ADMIN_PASSWORD` su Render |

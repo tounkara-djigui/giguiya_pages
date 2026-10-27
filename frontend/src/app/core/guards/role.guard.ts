@@ -13,3 +13,6 @@ const roleGuard = (role: Role): CanActivateFn => (_route, state) => {
 
 export const adminGuard = roleGuard('admin');
 export const memberGuard = roleGuard('member');
+
+export const superAdminGuard: CanActivateFn = () =>
+  inject(AuthService).user()?.is_super_admin ? true : inject(Router).createUrlTree(['/admin']);

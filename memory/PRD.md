@@ -72,7 +72,15 @@ Navbar Home/Eventi/Progetti/Chi siamo/5x1000/Accesso(Login, Registrazione socio)
 ## Update 2026-10-26 (documentazione)
 - /app/docs/DOCUMENTAZIONE.md (21 capitoli, italiano, nessuna password) + /app/docs/Giguiya_Documentazione.pdf (28 pagine, copertina scura/oro, indice) generato con /app/docs/build_pdf.py (markdown + Chromium headless). Verificato visivamente pagina per pagina.
 
+## Update 2026-10-27 (approvazione staff, email Resend, galleria, tema)
+- Staff: registrazione @giguiya.it → conferma email → admin_status "pending" → solo ADMIN_EMAIL (super admin) approva/revoca/elimina in /admin/staff (backend router admin/staff.py, require_super_admin; frontend superAdminGuard). Login pending → 403; /me restituisce role "pending" e is_super_admin. Email avviso al super admin e allo staff approvato. Seed: admin esistenti (non super) messi in pending una volta.
+- Causa email mancanti in produzione: Render Free blocca SMTP. Aggiunto invio via Resend API HTTPS (RESEND_API_KEY + EMAIL_FROM), priorità Resend > SMTP > Emergent. render.yaml aggiornato.
+- Progetti: campo gallery (max 12), gestione nel form admin, galleria + lightbox (frecce, Esc) nel dettaglio.
+- Tema chiaro/scuro per visitatori (ThemeService, localStorage giguiya-theme, script anti-flash in index.html); colori hardcoded convertiti in variabili; zone su foto mantengono testo chiaro.
+- Documentazione aggiornata a v1.1 (PDF rigenerato). Testing iteration_4: backend 33/33, frontend ok dopo fix contrasto foto, guard staff, navbar mobile, tastiera lightbox.
+
 ## Backlog
+- P0: Cliente: configurare Resend (dominio giguiya.it su Aruba + chiave su Render) e fare Save to GitHub.
 - P0: Ricevere dal cliente gli importi reali di iscrizione e quota annuale (ora "xx").
 - P1: Pubblicare statuto (PDF) e codice fiscale; caricamento immagini da admin (object storage) invece di URL.
 - P1: Galleria foto eventi/progetti; pagina squadra con calendario partite.

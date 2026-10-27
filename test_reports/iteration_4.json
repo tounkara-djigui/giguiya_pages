@@ -1,0 +1,44 @@
+{
+  "summary": "Tested staff approval (super admin only), project gallery, light/dark theme toggle, plus regression on login, booking and membership. Backend: 33/33 pytest pass (8 new in test_staff_gallery.py plus 25 regression). One old assertion was updated: a verified staff account now gets 403 at login until approved. Frontend: the Staff nav link shows only for the super admin. The /admin/staff table shows the right statuses, approve is disabled for unverified accounts, and approve/revoke/delete work with toasts. Pending staff see the 'in attesa di approvazione' message at login; approved staff get /admin without the Staff link. Gallery upload, remove, save, public gallery and lightbox prev/next/close/backdrop all work. The theme toggle sets html data-theme='light', saves to localStorage and survives reload and navigation, on desktop and mobile. Booking and become-member flows still work. MAIN ISSUE: in light mode, text over photos is dark-on-dark and unreadable (home hero, hero next-event card, page headers on eventi/progetti/chi-siamo/5x1000, the 'Scopri il Mali' tiles, the login side panel brand and quote).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "email_service._resend_send", "issue": "If RESEND_API_KEY is set but EMAIL_FROM is missing, formataddr((name, None)) raises AttributeError (verified). try_send_email only catches HTTPException/ValueError, so bookings, registrations and approvals would return 500 in production. Fix: check EMAIL_FROM at startup or fall back, and catch generic Exception in try_send_email."},
+      {"endpoint": "seed / is_super_admin", "issue": "seed looks up the admin with settings.ADMIN_EMAIL without lowercasing, while is_super_admin and staff queries lowercase it. If ADMIN_EMAIL on Render has uppercase letters, seed can create a duplicate admin that is never super admin. Lowercase it everywhere."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Light theme, all photo zones (_tokens.scss photo-zone rule)", "issue": "RCA: body sets color: var(--text), which resolves to dark #1c1915 in light mode. The rule '.hero, .ph.has-bg, .hero-ev, .auth-shell .side, .tile, .event-card .media { @include dark-text }' only redefines the --text variable and never sets 'color'. So h1/h3/p elements without an explicit colour inherit the dark colour already computed on body. Measured: --text on .hero is #f4f4f6, but the h1 computed colour is rgb(28,25,21). Unreadable: home hero 'Radici maliane,', the next-event card title (dark on dark glass), page-header titles ('Eventi e', 'Il tuo 5x1000 a', etc.), Mali tile titles and descriptions, the login side brand 'Giguiya' and quote, and likely event-card date badges. Fix: add 'color: var(--text);' to that rule (and check .event-card .media badges).", "selector": "[data-testid=home-hero] h1, [data-testid=hero-next-event-card] h3, app-page-header h1, .tile, .auth-shell .side", "priority": "HIGH"}
+    ],
+    "integration_issues": [
+      {"flow": "Approved non-super staff opens /admin/staff directly", "issue": "There is no frontend guard. The API returns 403 correctly and a toast shows 'Riservato all'amministratore principale', but the page keeps its loading skeleton forever. Add a superAdmin guard or redirect, or show the error state.", "affected_selectors": ["[data-testid=admin-staff-table]"]}
+    ],
+    "design_issues": [
+      {"screen": "Mobile navbar 390px", "issues": ["The hamburger (navbar-mobile-toggle) ends at x=392 and is clipped and flush with the viewport edge since the theme toggle was added. Reduce gaps or hide the 'Diventa socio' pill text on narrow screens."]},
+      {"screen": "Project lightbox", "issues": ["No Escape or arrow-key support (Escape tested, does nothing) and no body scroll lock. Nice-to-have for accessibility."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_staff_gallery.py", "/app/backend/tests/test_giguiya_mongo.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "HIGH: add 'color: var(--text);' to the photo-zone rule in frontend/src/styles/_tokens.scss so headings and text over photos are light in light mode. Then re-check the home hero, next-event card, page headers, Mali tiles, the login side panel and the event-card media badges.",
+    "Guard /admin/staff for non-super admins, or render an error state instead of the endless skeleton.",
+    "Make the Resend branch robust: require or fallback EMAIL_FROM, and catch unexpected exceptions in try_send_email so email problems never cause 500s.",
+    "Fix the mobile navbar right-edge overflow (hamburger clipped by 2px).",
+    "Optional: add Escape and arrow keys to the lightbox; lowercase ADMIN_EMAIL consistently in seed."
+  ],
+  "critical_code_review_comments": [
+    "security.py: is_approved_admin is checked per request, so revoking access works immediately for existing sessions (verified: stats returns 403 and /me returns role 'pending'). Good.",
+    "staff.py endpoints exclude ADMIN_EMAIL, so the super admin cannot revoke or delete itself (404). Good.",
+    "auth.admin_register: re-registering an unverified staff email resends the token but keeps the old password and name. Acceptable but possibly surprising.",
+    "project-form/detail: '@for track g' throws NG0955 if the same URL appears twice in the gallery. Use track $index.",
+    "Emergent email hit 'rate_limited' during testing. try_send_email handles it gracefully (email_sent false; the booking UI shows the 'non siamo riusciti a inviare' note)."
+  ],
+  "updated_files": ["/app/backend/tests/test_giguiya_mongo.py (test_admin_register_flow now expects 403 for a verified but unapproved staff login)", "/app/backend/tests/test_staff_gallery.py (new)"],
+  "success_rate": {"backend": "100%", "frontend": "80% (functional flows all pass; light-theme readability over photos fails)"},
+  "seed_data_creation": "None kept. Temporary TEST staff (test_uistaff_*@giguiya.it, TEST_staff_*@giguiya.it), TEST_ projects, test_* bookings and members were all deleted. Uploaded test_g*.png files were marked is_deleted. info@giguiya.it was not touched (still role admin, verified, pending). Seed projects are unchanged.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend/tests && python -m pytest -n 0 -v test_staff_gallery.py test_giguiya_mongo.py (33 tests). Running the suite triggers many emails and can hit the Emergent email rate limit; email_sent false is expected then. The UI staff test needs a DB-created verified TEST staff (register via API, then set email_verified true with pymongo). Gallery UI: set_input_files on [data-testid=admin-project-gallery-upload-input]. Lightbox state reads need about 500ms waits (animation and signal render). Light theme: localStorage.setItem('giguiya-theme','light') and reload. Do not touch info@giguiya.it.",
+  "rca of the issue": "Light-mode dark text on photos: CSS custom properties are inherited, but 'color' is computed once on body (color: var(--text) resolves to dark there). Children of .hero and the other photo zones inherit the computed colour, not the variable, so redefining --text on .hero has no effect unless .hero also sets color: var(--text). Reproduce: localStorage giguiya-theme=light, open /, then getComputedStyle(document.querySelector('.hero h1')).color returns rgb(28,25,21) while .hero --text is #f4f4f6. Mitigation: add color: var(--text) to the photo-zone selector list in _tokens.scss."
+}

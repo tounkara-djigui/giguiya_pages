@@ -127,7 +127,7 @@ def _smtp_send(to: str, subject: str, html: str) -> None:
 
 
 async def _resend_send(to: str, subject: str, html: str) -> str | None:
-    payload = {"from": formataddr((settings.EMAIL_FROM_NAME, settings.EMAIL_FROM)), "to": [to],
+    payload = {"from": formataddr((settings.EMAIL_FROM_NAME, settings.EMAIL_FROM or settings.EMAIL_REPLY_TO)), "to": [to],
                "subject": subject, "html": html}
     if settings.EMAIL_REPLY_TO:
         payload["reply_to"] = settings.EMAIL_REPLY_TO
@@ -198,5 +198,8 @@ async def try_send_email(*, to: str, subject: str, html: str) -> bool:
             await asyncio.sleep(2)
         except ValueError as e:
             logger.error(f"Email blocked by guardrail: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Email send error: {e}")
             return False
     return False

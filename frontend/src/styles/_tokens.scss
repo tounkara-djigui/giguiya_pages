@@ -78,6 +78,7 @@
 }
 
 // Zones over photos keep light text in both themes
-.hero, .ph.has-bg, .hero-ev, .auth-shell .side, .tile, .event-card .media {
+.hero, .ph.has-bg, .hero-ev, .shell .side, .tile, .event-card .media {
   @include dark-text;
+  color: var(--text);
 }

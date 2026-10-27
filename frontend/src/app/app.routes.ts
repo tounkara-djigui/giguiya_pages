@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard, memberGuard } from './core/guards/role.guard';
+import { adminGuard, memberGuard, superAdminGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./features/home/home.page'), title: 'Giguiya · Associazione della comunità maliana a Torino' },
@@ -31,7 +31,7 @@ export const routes: Routes = [
       { path: 'interessati', loadComponent: () => import('./features/admin/contacts/admin-contacts.page'), title: 'Interessati · Admin Giguiya' },
       { path: 'eventi', loadComponent: () => import('./features/admin/events/admin-events.page'), title: 'Eventi · Admin Giguiya' },
       { path: 'progetti', loadComponent: () => import('./features/admin/projects/admin-projects.page'), title: 'Progetti · Admin Giguiya' },
-      { path: 'staff', loadComponent: () => import('./features/admin/staff/admin-staff.page'), title: 'Staff · Admin Giguiya' },
+      { path: 'staff', canActivate: [superAdminGuard], loadComponent: () => import('./features/admin/staff/admin-staff.page'), title: 'Staff · Admin Giguiya' },
     ],
   },
   { path: '**', loadComponent: () => import('./features/not-found/not-found.page'), title: 'Pagina non trovata · Giguiya' },

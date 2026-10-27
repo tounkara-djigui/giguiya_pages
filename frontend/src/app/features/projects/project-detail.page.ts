@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, HostListener, effect, inject, input, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -116,7 +116,19 @@ export default class ProjectDetailPage {
     this.open.update((i) => ((i ?? 0) + dir + total) % total);
   }
 
+  @HostListener('document:keydown', ['$event'])
+  onKey(e: KeyboardEvent): void {
+    const total = this.project()?.gallery.length ?? 0;
+    if (this.open() === null || !total) return;
+    if (e.key === 'Escape') this.open.set(null);
+    if (e.key === 'ArrowRight') this.step(1, total);
+    if (e.key === 'ArrowLeft') this.step(-1, total);
+  }
+
   constructor() {
+    effect(() => {
+      document.body.style.overflow = this.open() === null ? '' : 'hidden';
+    });
     effect(() => {
       this.api.project(this.slug()).subscribe({
         next: (p) => {

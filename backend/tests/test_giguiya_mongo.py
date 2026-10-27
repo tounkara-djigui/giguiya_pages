@@ -171,7 +171,8 @@ class TestAuth:
         raw = insert_token(user["id"], "verify_email")
         assert requests.post(f"{API}/auth/verify-email", json={"token": raw}).status_code == 200
         assert requests.post(f"{API}/auth/verify-email", json={"token": raw}).status_code == 400
-        assert requests.post(f"{API}/auth/login", json={"email": email, "password": "TestPass123!"}).status_code == 200
+        # since staff-approval feature: verified staff stays pending until super admin approves
+        assert requests.post(f"{API}/auth/login", json={"email": email, "password": "TestPass123!"}).status_code == 403
 
     def test_change_and_forgot_password(self):
         email, _ = register_member("chg")
